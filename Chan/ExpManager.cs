@@ -6,26 +6,25 @@ using UnityEngine;
 
 public class ExpManager : MonoBehaviour
 {
-    [SerializeField] Material Screen_FR;
     [SerializeField] CSV_Save_Processed CSV_P;
     int[,] Condition_Array = new int[80, 4];
     public int[] ConditionList = new int[4];
     public int[] TaskList = new int[30];
     float TaskTimer;
     public int ReverseCount;
-    public int FoveationLevel; // 1,2,4,8,16
+    public float FoveationLevel; // 1,2,4,8,16
     public int PlayerAnswer;
     public int OriginNum; // Task 당시의 원본 이미지 번호
     public bool IsCorrect; // 사용자 선택이 정답인지 아닌지
     public bool PreviousAnswer; // 직전 task 정답 여부
-    public bool FoveationUpOrDown; // True : 올림, False : 내림
+    public bool DecreaseFoveation; // True : 내림, False : 올림
     public GameObject Cinema_O, Cinema_F, UIsetting_O, UIsetting_F, Web_O, Web_F, Game_O, Game_F;
     public GameObject Notice_ExpEnd;
     bool Term_InputAnswer; // 사용자 입력 가능 시기
     int TaskCount, ConditionCount;
     public Scenario CurrentScenario;
     public GameObject Text_Texture1, Text_Texture2; // 각 이미지 '1번입니다, 2번입니다' 안내
-    public bool Trigger_ProceedTask, Trigger_ApplyArray;
+    public bool Trigger_ProceedTask, Trigger_ApplyArray, Trigger_AdjustFoveation;
     public int SampleNumber;
 
     void FixedUpdate()
@@ -37,18 +36,7 @@ public class ExpManager : MonoBehaviour
             ProceedTask();
 
         if (Term_InputAnswer)
-        {
-            if (Input.GetKeyDown(KeyCode.S))
-            {
-                PlayerAnswer = 1;
-                CheckAnswer(PlayerAnswer);
-            }
-            else if (Input.GetKeyDown(KeyCode.D))
-            {
-                PlayerAnswer = 2;
-                CheckAnswer(PlayerAnswer);
-            }
-        }
+            GetAnswer();
     }
 
     private void ApplyArray()
@@ -90,7 +78,7 @@ public class ExpManager : MonoBehaviour
             else
                 Text_Texture1.SetActive(false);
 
-        if (TaskTimer > 2 && TaskTimer < 7)
+        if (TaskTimer > 3 && TaskTimer < 8)
         {
             if (TaskList[TaskCount] == 1)
                 ShowTexture_Origin(CurrentScenario);
@@ -98,13 +86,13 @@ public class ExpManager : MonoBehaviour
                 ShowTexture_Foveation(CurrentScenario);
         }
 
-        if (TaskTimer > 8 && TaskTimer < 11)
-            if (TaskTimer < 10)
+        if (TaskTimer > 9 && TaskTimer < 12)
+            if (TaskTimer < 11)
                 Text_Texture2.SetActive(true);
             else
                 Text_Texture2.SetActive(false);
 
-        if (TaskTimer > 11 && TaskTimer < 16)
+        if (TaskTimer > 12 && TaskTimer < 17)
         {
             if (TaskList[TaskCount] == 1)
                 ShowTexture_Foveation(CurrentScenario);
@@ -112,7 +100,7 @@ public class ExpManager : MonoBehaviour
                 ShowTexture_Origin(CurrentScenario);
         }
 
-        if ((TaskTimer > 7 && TaskTimer < 8) || (TaskTimer > 16 && TaskTimer < 17))
+        if ((TaskTimer > 8 && TaskTimer < 9) || (TaskTimer > 17 && TaskTimer < 18))
             TurnOffTexture();
 
         if (TaskTimer > 17)
@@ -158,24 +146,40 @@ public class ExpManager : MonoBehaviour
         Game_F.SetActive(false);
     }
 
+    void GetAnswer()
+    {
+        GetAnswer();
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            PlayerAnswer = 1;
+            CheckAnswer(PlayerAnswer);
+        }
+        else if (Input.GetKeyDown(KeyCode.D))
+        {
+            PlayerAnswer = 2;
+            CheckAnswer(PlayerAnswer);
+        }
+    }
+
     void CheckAnswer(int PlayerAnswer)
     {
         if (PlayerAnswer == OriginNum)
         {
             IsCorrect = true;
-            FoveationUpOrDown = true;
+            DecreaseFoveation = true;
         }
         else
         {
             IsCorrect = false;
-            FoveationUpOrDown = false;
+            DecreaseFoveation = false;
         }
 
         CSV_P.Save_CSV_Analysis();
         TaskCount++;
         TaskTimer = 0;
         IncreaseReverseCount();
-        AdjustFoveation(FoveationUpOrDown);
+        AdjustFoveation(DecreaseFoveation);
+        Trigger_AdjustFoveation = true;
         Term_InputAnswer = false;
         if (ReverseCount != 12)
             Trigger_ProceedTask = true;
@@ -195,11 +199,9 @@ public class ExpManager : MonoBehaviour
     void AdjustFoveation(bool FoveationUpOrDown)
     {
         if (FoveationUpOrDown)
-            FoveationLevel *= 2;
-        else
             FoveationLevel /= 2;
-
-        Screen_FR.SetFloat("_Foveation", FoveationLevel);
+        else
+            FoveationLevel *= 2;
     }
 
     void BlockEnd()
@@ -221,6 +223,7 @@ public class ExpManager : MonoBehaviour
         TaskTimer = 0;
         Term_InputAnswer = false;
         Trigger_ProceedTask = false;
+        Trigger_AdjustFoveation = false;
     }
 
     public enum Scenario

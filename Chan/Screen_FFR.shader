@@ -3,12 +3,12 @@ Shader "Unlit/Screen_FFR"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _Resolution_X("Resolution_X", Float) = 3840
-        _Resolution_Y("Resolution_Y", Float) = 2160
+        // _Resolution_X("Resolution_X", Float) = 7680
+        // _Resolution_Y("Resolution_Y", Float) = 4320
         _DownscaleFactor("Downscale Factor", Range(0,3)) = 1.0
         _GazePoint("Gaze Point", Vector) = (0,0,10,0)
-        _FoveaRegionRadius("Fovea Region Radius", Float) = 5
-        _GroupSize("Group Size", Range(0.01,1)) = 1.0
+        //_FoveaRegionRadius("Fovea Region Radius", Float) = 10
+        //_GroupSize("Group Size", Range(0.01,1)) = 1.0
         _Sigma("Sigma", Range(0.1,5.0)) = 1.0
 
     }
@@ -63,9 +63,11 @@ Shader "Unlit/Screen_FFR"
                 o.uv = v.uv;
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 UNITY_TRANSFER_FOG(o,o.vertex);
+                o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
                 return o;
             }
 
+                        
             float Gaussian(float x, float y, float _Sigma) {
                 float coeff = 1.0 / (2.0 * 3.14 * _Sigma * _Sigma);
                 float expon = -(x*x + y*y) / (2.0 * _Sigma * _Sigma);
@@ -74,86 +76,47 @@ Shader "Unlit/Screen_FFR"
 
             fixed4 frag (v2f i) : SV_Target
             {
+
                 float2 uv = i.uv;
                 float4 col = float4(0,0,0,0);
                 float2 gridSize;
 
                 float totalWeight = 0.0;
                 int _GaussianRange=5;
+                _Resolution_X = 7680.0;
+                _Resolution_Y = 4320.0;
 
-                // // Fovea region : Sphere
-                // float DistanceVar = distance(i.worldPos, _GazePoint.xyz);
+                // Fovea region : Sphere
+                float DistanceVar = distance(i.worldPos, _GazePoint.xyz);
 
-                // if(DistanceVar < _FoveaRegionRadius + 0.1 || DistanceVar > _FoveaRegionRadius - 0.1)
-                // {
-                //     for (int x = -_GaussianRange; x <= _GaussianRange; x++) {
-                //         for (int y = -_GaussianRange; y <= _GaussianRange; y++) {
-                //             float2 offset = float2(x, y) / float2(3840.0, 2160.0) ;
-                //             float weight = Gaussian(x, y , _Sigma);
-                //             col += tex2D(_MainTex, uv + offset) * weight;
-                //             totalWeight += weight;
-                //         }
-                //     }
-                //     col /= totalWeight; // 정규화를 통한 최종 색상 계산
-                // }
+                float Distance_X = abs(i.worldPos.x - _GazePoint.x);
+                float Distance_Y = abs(i.worldPos.y - _GazePoint.y);
+                float Distance_Sum = Distance_X + Distance_Y;
 
-                // if(DistanceVar > _FoveaRegionRadius + 0.1)
-                // {
-                //                     // 정의된 영역에 따라 UV 좌표를 조정
-                // float2 gridSize = float2(3840.0, 2160.0);
-                // gridSize *= _GroupSize;
-                // float2 gridPosition = floor(i.uv * gridSize) / gridSize;
-                // float2 gridStep = 1.0/gridSize;
-                                                
-                // // // 해당 영역의 가장 왼쪽 위 픽셀 색상을 샘플링
-                // // float4 color = tex2D(_MainTex, gridPosition);
-                // // return color;
-                
-                // // 네 모서리 픽셀의 색상을 샘플링
-                // float2 topLeft = gridPosition;
-                // float2 topRight = gridPosition + float2(gridStep.x, 0);
-                // float2 bottomLeft = gridPosition + float2(0, gridStep.y);
-                // float2 bottomRight = gridPosition + gridStep;
+                float Coor_X = i.worldPos.x;
+                float Coor_Y = i.worldPos.y;
+                float XXX = _GazePoint.x + _FoveaRegionRadius;
+                float XXX2 = _GazePoint.x - _FoveaRegionRadius;
+                float YYY = _GazePoint.y + _FoveaRegionRadius;
+                float YYY2 = _GazePoint.y - _FoveaRegionRadius;
 
-                // float4 colorTopLeft = tex2D(_MainTex, topLeft);
-                // float4 colorTopRight = tex2D(_MainTex, topRight);
-                // float4 colorBottomLeft = tex2D(_MainTex, bottomLeft);
-                // float4 colorBottomRight = tex2D(_MainTex, bottomRight);
-                
-                // // 평균 색상 계산
-                // float4 averageColor = (colorTopLeft + colorTopRight + colorBottomLeft + colorBottomRight) / 4.0;
-                
-                // return averageColor;
-                // }
-                
-                // Fovea region : Square
-                // float2 GridUV = i.uv * float2(8.0, 8.0);
-                // float2 GridPosition = floor(GridUV);
-                // int GridNumber = int(GridPosition.y) * 8 + int(GridPosition.x) + 1;
-                // bool FoveaRegion_Square = (GridNumber == 19 || GridNumber == 20 || GridNumber == 21 || GridNumber == 22
-                //                         || GridNumber == 27 || GridNumber == 28 || GridNumber == 29 || GridNumber == 30
-                //                         || GridNumber == 35 || GridNumber == 36 || GridNumber == 37 || GridNumber == 38
-                //                         || GridNumber == 43 || GridNumber == 44 || GridNumber == 45 || GridNumber == 46);
-                // bool GaussianRegion = (GridNumber == 10 || GridNumber == 11 || GridNumber == 12 || GridNumber == 13
-                //                     || GridNumber == 14 || GridNumber == 15 || GridNumber == 18 || GridNumber == 23
-                //                     || GridNumber == 26 || GridNumber == 31 || GridNumber == 34 || GridNumber == 39
-                //                     || GridNumber == 42 || GridNumber == 47 || GridNumber == 50 || GridNumber == 51
-                //                     || GridNumber == 52 || GridNumber == 53 || GridNumber == 54 || GridNumber == 55);
-                // bool RestRegion = (GridNumber == 1 || GridNumber == 2 || GridNumber == 3 || GridNumber == 4
-                //                 || GridNumber == 5 || GridNumber == 6 || GridNumber == 7 || GridNumber == 8
-                //                 || GridNumber == 9 || GridNumber == 16 || GridNumber == 17 || GridNumber == 24
-                //                 || GridNumber == 25 || GridNumber == 32 || GridNumber == 33 || GridNumber == 40
-                //                 || GridNumber == 41 || GridNumber == 48 || GridNumber == 49 || GridNumber == 56
-                //                 || GridNumber == 57 || GridNumber == 58 || GridNumber == 59 || GridNumber == 60
-                //                 || GridNumber == 61 || GridNumber == 62 || GridNumber == 63 || GridNumber == 64);
 
-                // Region 구분
-                bool FoveaRegion = uv.x > 0.25 && uv.x < 0.75 && uv.y > 0.25 && uv.y < 0.75;
-                bool PeripheralRegion = uv.x > 0.2 && uv.x < 0.8 && uv.y > 0.2 && uv.y < 0.8;
-                bool BlendRegion_1 = uv.x > 0.24 && uv.x < 0.76 && uv.y > 0.24 && uv.y < 0.76;
-                bool BlendRegion_2 = uv.x > 0.23 && uv.x < 0.77 && uv.y > 0.23 && uv.y < 0.77;
-                bool BlendRegion_3 = uv.x > 0.22 && uv.x < 0.78 && uv.y > 0.22 && uv.y < 0.78;
-                bool BlendRegion_4 = uv.x > 0.21 && uv.x < 0.79 && uv.y > 0.21 && uv.y < 0.79;
+                // *********************** Multi Layer **************************
+
+                // // //Circle Region
+                // // bool FoveaRegion = DistanceVar < _FoveaRegionRadius;
+                // // bool PeripheralRegion = DistanceVar > _FoveaRegionRadius + 2.0;
+                // // bool BlendRegion_1 = DistanceVar > _FoveaRegionRadius + 0.0 && DistanceVar < _FoveaRegionRadius + 0.5;
+                // // bool BlendRegion_2 = DistanceVar > _FoveaRegionRadius + 0.5 && DistanceVar < _FoveaRegionRadius + 1.0;
+                // // bool BlendRegion_3 = DistanceVar > _FoveaRegionRadius + 1.0 && DistanceVar < _FoveaRegionRadius + 1.5;
+                // // bool BlendRegion_4 = DistanceVar > _FoveaRegionRadius + 1.5 && DistanceVar < _FoveaRegionRadius + 2.0;
+
+                // Square Region
+                bool FoveaRegion = Coor_X < XXX && Coor_X > XXX2 && Coor_Y < YYY && Coor_Y > YYY2;
+                bool BlendRegion_1 = Coor_X < XXX + 0.5 && Coor_X > XXX2 - 0.5 && Coor_Y < YYY + 0.5 && Coor_Y > YYY2 - 0.5; 
+                bool BlendRegion_2 = Coor_X < XXX + 1.0 && Coor_X > XXX2 - 1.0 && Coor_Y < YYY + 1.0 && Coor_Y > YYY2 - 1.0; 
+                bool BlendRegion_3 = Coor_X < XXX + 1.5 && Coor_X > XXX2 - 1.5 && Coor_Y < YYY + 1.5 && Coor_Y > YYY2 - 1.5; 
+                bool BlendRegion_4 = Coor_X < XXX + 2.0 && Coor_X > XXX2 - 2.0 && Coor_Y < YYY + 2.0 && Coor_Y > YYY2 - 2.0; 
 
                 if(FoveaRegion)
                 {
@@ -162,31 +125,50 @@ Shader "Unlit/Screen_FFR"
 
                 if(!FoveaRegion)
                 {
-                    if(!BlendRegion_1)
+                    if(BlendRegion_4)
                     {
-                        gridSize = float2(3840.0, 2160.0);
-                        gridSize *= _GroupSize*2;
-                    }
-                    if(!BlendRegion_2)
-                    {
-                        gridSize = float2(3840.0, 2160.0);
-                        gridSize *= _GroupSize*1.75;
-                    }
-                    if(!BlendRegion_3)
-                    {
-                        gridSize = float2(3840.0, 2160.0);
-                        gridSize *= _GroupSize*1.5;
-                    }
-                    if(!BlendRegion_4)
-                    {
-                        gridSize = float2(3840.0, 2160.0);
+                        gridSize = float2(_Resolution_X, _Resolution_Y);
                         gridSize *= _GroupSize*1.25;
+                        //col = float4(1,1,1,1);
+                        
                     }
-                    if(!PeripheralRegion)
+                    if(BlendRegion_3)
                     {
-                        gridSize = float2(3840.0, 2160.0);
-                        gridSize *= _GroupSize;
+                        gridSize = float2(_Resolution_X, _Resolution_Y);
+                        gridSize *= _GroupSize*1.5;
+                        //col = float4(0,1,1,1);
                     }
+                    if(BlendRegion_2)
+                    {
+                        gridSize = float2(_Resolution_X, _Resolution_Y);
+                        gridSize *= _GroupSize*1.75;
+                        //col = float4(1,0,1,1);
+                    }
+                    if(BlendRegion_1)
+                    {
+                        gridSize = float2(_Resolution_X, _Resolution_Y);
+                        gridSize *= _GroupSize*2.0;
+                        //col = float4(1,1,0,1);
+                    }
+
+                    // Square Region
+                    if(!BlendRegion_4) // Peripheral Region
+                    {
+                        gridSize = float2(_Resolution_X, _Resolution_Y);
+                        gridSize *= _GroupSize;
+                        //col = float4(1,0,0,1);
+                    }
+
+                    // // Circle Region
+                    // if(PeripheralRegion)
+                    // {
+                    //     gridSize = float2(_Resolution_X, _Resolution_Y);
+                    //     gridSize *= _GroupSize;
+                    //     //col = float4(1,0,0,1);
+                    // }
+
+                    // // 원색 테스트
+                    // return col;
 
                     float2 gridPosition = floor(i.uv * gridSize) / gridSize;
                     float2 gridStep = 1.0/gridSize;
@@ -208,20 +190,31 @@ Shader "Unlit/Screen_FFR"
                     return averageColor;
                 }
 
-                // if(isInBlendRegion)
-                // {
-                //     for (int x = -_GaussianRange; x <= _GaussianRange; x++) {
-                //         for (int y = -_GaussianRange; y <= _GaussianRange; y++) {
-                //             float2 offset = float2(x, y) / float2(3840.0, 2160.0) ;
-                //             float weight = Gaussian(x, y , _Sigma);
-                //             col += tex2D(_MainTex, uv + offset) * weight;
-                //             totalWeight += weight;
-                //         }
-                //     }
-                //     col /= totalWeight; // 정규화를 통한 최종 색상 계산 
-                // }
 
 
+                                
+                
+                // *************** Gaussian Blur ******************
+
+                // float2 GridUV = i.uv * float2(8.0, 8.0);
+                // float2 GridPosition = floor(GridUV);
+                // int GridNumber = int(GridPosition.y) * 8 + int(GridPosition.x) + 1;
+                // bool FoveaRegion_Square = (GridNumber == 19 || GridNumber == 20 || GridNumber == 21 || GridNumber == 22
+                //                         || GridNumber == 27 || GridNumber == 28 || GridNumber == 29 || GridNumber == 30
+                //                         || GridNumber == 35 || GridNumber == 36 || GridNumber == 37 || GridNumber == 38
+                //                         || GridNumber == 43 || GridNumber == 44 || GridNumber == 45 || GridNumber == 46);
+                // bool GaussianRegion = (GridNumber == 10 || GridNumber == 11 || GridNumber == 12 || GridNumber == 13
+                //                     || GridNumber == 14 || GridNumber == 15 || GridNumber == 18 || GridNumber == 23
+                //                     || GridNumber == 26 || GridNumber == 31 || GridNumber == 34 || GridNumber == 39
+                //                     || GridNumber == 42 || GridNumber == 47 || GridNumber == 50 || GridNumber == 51
+                //                     || GridNumber == 52 || GridNumber == 53 || GridNumber == 54 || GridNumber == 55);
+                // bool RestRegion = (GridNumber == 1 || GridNumber == 2 || GridNumber == 3 || GridNumber == 4
+                //                 || GridNumber == 5 || GridNumber == 6 || GridNumber == 7 || GridNumber == 8
+                //                 || GridNumber == 9 || GridNumber == 16 || GridNumber == 17 || GridNumber == 24
+                //                 || GridNumber == 25 || GridNumber == 32 || GridNumber == 33 || GridNumber == 40
+                //                 || GridNumber == 41 || GridNumber == 48 || GridNumber == 49 || GridNumber == 56
+                //                 || GridNumber == 57 || GridNumber == 58 || GridNumber == 59 || GridNumber == 60
+                //                 || GridNumber == 61 || GridNumber == 62 || GridNumber == 63 || GridNumber == 64);
 
                 // if(GaussianRegion)
                 // {
@@ -247,11 +240,7 @@ Shader "Unlit/Screen_FFR"
                 // gridSize *= _GroupSize;
                 // float2 gridPosition = floor(i.uv * gridSize) / gridSize;
                 // float2 gridStep = 1.0/gridSize;
-                                                
-                // // // 해당 영역의 가장 왼쪽 위 픽셀 색상을 샘플링
-                // // float4 color = tex2D(_MainTex, gridPosition);
-                // // return color;
-                
+
                 // // 네 모서리 픽셀의 색상을 샘플링
                 // float2 topLeft = gridPosition;
                 // float2 topRight = gridPosition + float2(gridStep.x, 0);
@@ -274,7 +263,6 @@ Shader "Unlit/Screen_FFR"
                 //     col = tex2D(_MainTex,uv);
                 // }
 
-                //col = tex2D(_MainTex, uv);  
                 return col;
             }
             ENDCG
