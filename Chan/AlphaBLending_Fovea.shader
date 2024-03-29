@@ -1,10 +1,10 @@
 Shader "Custom/AlphaBlending_Fovea" {
     Properties {
-   
+        _MainTex ("Texture", 2D) = "white" {}
     }
     SubShader {
         // Render with transparency
-        Tags { "Queue"="Transparent" "RenderType"="Transparent" }
+        Tags {"Render Queue" = "Transparency"  "RenderType"="Transparency" }
         Blend SrcAlpha OneMinusSrcAlpha
         LOD 100
 
@@ -15,6 +15,9 @@ Shader "Custom/AlphaBlending_Fovea" {
             
             // Including necessary Unity shader libraries
             #include "UnityCG.cginc"
+
+            sampler2D _MainTex;
+            float4 _MainTex_ST;
 
             struct appdata {
                 float4 vertex : POSITION;
@@ -27,10 +30,6 @@ Shader "Custom/AlphaBlending_Fovea" {
                 float3 worldPos : TEXCOORD1;
             };
 
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
-            float Resolution_X;
-            float Resolution_Y;
             float4 UserGazePoint;
             float FoveaRegionSize;
 
@@ -45,8 +44,6 @@ Shader "Custom/AlphaBlending_Fovea" {
             fixed4 frag (v2f i) : SV_Target {
                 // Sample the texture color
                 fixed4 TextureColor = tex2D(_MainTex, i.uv);
-                Resolution_X = 7680.0;
-                Resolution_Y = 4320.0;
 
                 float PixelCoor_X = i.worldPos.x;
                 float PixelCoor_Y = i.worldPos.y;
@@ -58,23 +55,21 @@ Shader "Custom/AlphaBlending_Fovea" {
                 
                 // Square Region
                 bool FoveaRegion = PixelCoor_X < FRS_Right && PixelCoor_X > FRS_Left && PixelCoor_Y < FRS_Up && PixelCoor_Y > FRS_Down;
-                bool BlendRegion_1 = PixelCoor_X < FRS_Right + 0.5 && PixelCoor_X > FRS_Left - 0.5 && PixelCoor_Y < FRS_Up + 0.5 && PixelCoor_Y > FRS_Down - 0.5; 
-                bool BlendRegion_2 = PixelCoor_X < FRS_Right + 1.0 && PixelCoor_X > FRS_Left - 1.0 && PixelCoor_Y < FRS_Up + 1.0 && PixelCoor_Y > FRS_Down - 1.0; 
-                bool BlendRegion_3 = PixelCoor_X < FRS_Right + 1.5 && PixelCoor_X > FRS_Left - 1.5 && PixelCoor_Y < FRS_Up + 1.5 && PixelCoor_Y > FRS_Down - 1.5; 
-            
-                
+                bool BlendRegion_1 = PixelCoor_X < FRS_Right + 0.1 && PixelCoor_X > FRS_Left - 0.1 && PixelCoor_Y < FRS_Up + 0.1 && PixelCoor_Y > FRS_Down - 0.1; 
+                bool BlendRegion_2 = PixelCoor_X < FRS_Right + 0.2 && PixelCoor_X > FRS_Left - 0.2 && PixelCoor_Y < FRS_Up + 0.2 && PixelCoor_Y > FRS_Down - 0.2; 
+                bool BlendRegion_3 = PixelCoor_X < FRS_Right + 0.3 && PixelCoor_X > FRS_Left - 0.3 && PixelCoor_Y < FRS_Up + 0.3 && PixelCoor_Y > FRS_Down - 0.3; 
+
                 if(FoveaRegion)
                 {
-                    col = tex2D(_MainTex,uv);
+                    TextureColor.a = 1.0;
                 }
 
                 if(!FoveaRegion)
                 {
                     if(BlendRegion_3)
                     {
-                        TextureColor.a = 0.25;
+                        TextureColor.a = 0.25;                        
                         //col = float4(1,1,1,1);
-                        
                     }
                     if(BlendRegion_2)
                     {
@@ -91,6 +86,7 @@ Shader "Custom/AlphaBlending_Fovea" {
                         TextureColor.a = 0.0;
                         //col = float4(1,0,0,1);
                     }
+                }
                 
                 return TextureColor; // Return the modified color
             }
