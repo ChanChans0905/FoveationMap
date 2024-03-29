@@ -11,6 +11,7 @@ public class CSV_Save_Processed : MonoBehaviour
     string[] csvHeaders = new string[] { "Data Name" };
     float[] DataArray = new float[10];
     string FilePath;
+    
 
     public void Save_CSV_Analysis()
     {
@@ -20,6 +21,8 @@ public class CSV_Save_Processed : MonoBehaviour
 
     private void SaveDataIntoArray()
     {
+        // number of trial, 자극 수준, 답변까지의 소요 시간, 정답 영상 위치, 피험자 응답 위치, Y/N 결과, reversal 횟수, reversal 여부, 실시간 응시 위치, 한계조건, 한계조건 총 소요시간, 횟수
+
         // DataArray[0] = DC.CMScombination[DC.CMSchangeCount - 1];
         // DataArray[1] = DC.taskCount;
         // DataArray[2] = DC.TaskScenario[DC.CMSchangeCount - 1, DC.taskCount];

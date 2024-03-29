@@ -7,7 +7,6 @@ using UnityEngine;
 public class ExpManager : MonoBehaviour
 {
     [SerializeField] CSV_Save_Processed CSV_P;
-    int[,] Condition_Array = new int[80, 4];
     public int[] ConditionList = new int[4];
     public int[] TaskList = new int[30];
     float TaskTimer;
@@ -24,13 +23,18 @@ public class ExpManager : MonoBehaviour
     int TaskCount, ConditionCount;
     public Scenario CurrentScenario;
     public GameObject Text_Texture1, Text_Texture2; // 각 이미지 '1번입니다, 2번입니다' 안내
-    public bool Trigger_ProceedTask, Trigger_ApplyArray, Trigger_AdjustFoveation;
+    public bool Trigger_ProceedTask, Trigger_AdjustFoveation;
     public int SampleNumber;
+
+    void Start()
+    {
+        // 시나리오 순서 랜덤 배정
+        ConditionList = new int[] { 1, 2, 3, 4 };
+        ShuffleArray(ConditionList);
+    }
 
     void FixedUpdate()
     {
-        if (Trigger_ApplyArray)
-            ApplyArray();
 
         if (Trigger_ProceedTask)
             ProceedTask();
@@ -39,17 +43,7 @@ public class ExpManager : MonoBehaviour
             GetAnswer();
     }
 
-    private void ApplyArray()
-    {
-        Condition_Array = new int[,] { { 1, 2, 3, 4 } };
-        for (int i = 0; i < ConditionList.Length; i++)
-            ConditionList[i] = Condition_Array[SampleNumber, i];
-
-        ChangeCondition();
-        Trigger_ApplyArray = false;
-    }
-
-    void ChangeCondition()
+    public void ChangeCondition()
     {
         if (ConditionList[ConditionCount] == 1)
             CurrentScenario = Scenario.Cinema;
@@ -224,6 +218,20 @@ public class ExpManager : MonoBehaviour
         Term_InputAnswer = false;
         Trigger_ProceedTask = false;
         Trigger_AdjustFoveation = false;
+    }
+
+    void ShuffleArray(int[] array)
+    {
+        System.Random rng = new System.Random();
+        int n = array.Length;
+        while (n > 1)
+        {
+            n--;
+            int k = rng.Next(n + 1);
+            int value = array[k];
+            array[k] = array[n];
+            array[n] = value;
+        }
     }
 
     public enum Scenario

@@ -32,7 +32,7 @@ public class NoticeManager : MonoBehaviour
         if (CreateCSVfile)
         {
             CSV_P.New_CSV_File();
-            ExpManager.Trigger_ApplyArray = true;
+            ExpManager.ChangeCondition();
             CreateCSVfile = false;
         }
 
