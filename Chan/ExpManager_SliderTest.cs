@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -12,7 +11,7 @@ public class ExpManager_SliderTest : MonoBehaviour
     [SerializeField] NoticeManager NM;
     [SerializeField] GetUserPositionToShader User;
     public int[] ConditionList = new int[4];
-    public float[] LastFiveAnswers = new float[5];
+    public List<float> LastFiveAnswers = new List<float>();
     public int ImageOrder;
     float TaskTimer;
     public int ReverseCount;
@@ -57,8 +56,6 @@ public class ExpManager_SliderTest : MonoBehaviour
     {
         if (ConditionCount < 4)
         {
-            NM.Term_NewCondition = true;
-
             if (ConditionList[ConditionCount] == 1)
                 CurrentScenario = Scenario.Cinema;
             else if (ConditionList[ConditionCount] == 2)
@@ -188,6 +185,7 @@ public class ExpManager_SliderTest : MonoBehaviour
             DecreaseFoveaRegionSize = false;
         }
 
+        CheckReverseCount();
         CSV_P.Save_CSV_Analysis();
 
         if (ReverseCount >= 8)
@@ -199,7 +197,6 @@ public class ExpManager_SliderTest : MonoBehaviour
         TaskTimer = 0;
         AddAnsweringTimer = true;
         AnsweringTimer = 0;
-        CheckReverseCount();
         AdjustFoveation(DecreaseFoveaRegionSize);
         Term_InputAnswer = false;
         ReversalAdded = 0;
@@ -227,6 +224,11 @@ public class ExpManager_SliderTest : MonoBehaviour
             User.CameraFOV -= 5;
         else
             User.CameraFOV += 5;
+
+        if (LastFiveAnswers.Count == 5)
+            LastFiveAnswers.RemoveAt(0);
+
+        LastFiveAnswers.Add(User.CameraFOV);
 
         User.Term_AdjustFoveation = true;
     }
@@ -279,7 +281,7 @@ public class ExpManager_SliderTest : MonoBehaviour
         AddAnsweringTimer = false;
         Trigger_ChangeImageOrder = false;
         ReversalAdded = 0;
-        Term_SliderTest = false;
+        Term_SliderTest = true;
     }
 
     public enum Scenario

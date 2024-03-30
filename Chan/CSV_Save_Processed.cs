@@ -15,6 +15,7 @@ public class CSV_Save_Processed : MonoBehaviour
     string[] csvHeaders = new string[] { "Data Name" };
     float[] DA_ST = new float[10];
     float[] DA_RT = new float[10];
+    string csvFileName;
     string FilePath;
 
     public void Save_CSV_Analysis()
@@ -37,6 +38,7 @@ public class CSV_Save_Processed : MonoBehaviour
         if (RT.Term_RandomTest)
         {
             DA_RT[0] = RT.PlayerAnswer;
+            DA_RT[1] = RT.TotalTestTime;
             AppendToCsv(DA_RT);
         }
 
@@ -62,11 +64,16 @@ public class CSV_Save_Processed : MonoBehaviour
 
     public void New_CSV_File()
     {
-        string csvDirectoryName = "DataForAnalysis";
+        string csvDirectoryName = "ProcessedData";
         string dir = Application.dataPath + "/" + csvDirectoryName;
         Directory.CreateDirectory(dir);
 
-        string csvFileName = "FoveationMap_DataForAnalysis" + NT.SampleNumber + ".csv";
+        if (ST.Term_SliderTest)
+            csvFileName = "FM_PD_SampleNumber" + NT.SampleNumber + "_Condition_" + ST.ConditionList[ST.ConditionCount] + "_SliderTest" + ".csv";
+
+        if (RT.Term_RandomTest)
+            csvFileName = "FM_PD_SampleNumber" + NT.SampleNumber + "_Condition_" + ST.ConditionList[ST.ConditionCount] + "_RandomTest" + ".csv";
+
         FilePath = Application.dataPath + "/" + csvDirectoryName + "/" + csvFileName;
 
         using (StreamWriter sw = File.CreateText(FilePath))

@@ -10,7 +10,6 @@ public class NoticeManager : MonoBehaviour
     [SerializeField] ExpManager_SliderTest ST;
     [SerializeField] ExpManager_RandomTest RT;
     public GameObject Notice_SelectSample, Notice_Welcome, Notice_GameStart;
-    public GameObject Notice_NewCondition;
     public GameObject Notice_ST_BreakStart, Notice_ST_Start;
     public GameObject Notice_RT_BreakStart, Notice_RT_Start;
     public Text Text_SampleNumber;
@@ -19,7 +18,7 @@ public class NoticeManager : MonoBehaviour
     public int SampleNumber;
     int Next;
     bool Term_SelectSampleNumber, Term_ExpStart;
-    public bool Term_NewCondition;
+    public bool Term_Notice_NewCondition;
     public bool Term_BreakTime;
     float BreakTimer;
 
@@ -40,15 +39,14 @@ public class NoticeManager : MonoBehaviour
         {
             CSV_P.New_CSV_File();
             ST.ChangeCondition();
-            Term_NewCondition = true;
             CreateCSVfile = false;
         }
 
         if (Term_BreakTime)
             BreakTime();
 
-        if (Term_NewCondition)
-            NewCondition();
+        if (Term_Notice_NewCondition)
+            Notice_NewCondition();
     }
 
     void SelectSampleNumber()
@@ -103,6 +101,7 @@ public class NoticeManager : MonoBehaviour
                 case 2:
                     Notice_GameStart.SetActive(false);
                     CreateCSVfile = true;
+                    Term_Notice_NewCondition = true;
                     Term_ExpStart = false;
                     break;
             }
@@ -122,9 +121,10 @@ public class NoticeManager : MonoBehaviour
                 Notice_ST_BreakStart.SetActive(false);
                 ST.Term_SliderTest = false;
                 RT.Term_RandomTest = true;
+                CreateCSVfile = true;
                 BreakTimer = 0;
                 Term_BreakTime = false;
-                Term_NewCondition = true;
+                Term_Notice_NewCondition = true;
             }
         }
 
@@ -137,14 +137,15 @@ public class NoticeManager : MonoBehaviour
                 Notice_RT_BreakStart.SetActive(false);
                 RT.Term_RandomTest = false;
                 ST.Term_SliderTest = true;
+                CreateCSVfile = true;
                 BreakTimer = 0;
                 Term_BreakTime = false;
-                Term_NewCondition = true;
+                Term_Notice_NewCondition = true;
             }
         }
     }
 
-    void NewCondition()
+    void Notice_NewCondition()
     {
         ThresholdTimer += Time.deltaTime;
 
@@ -156,7 +157,7 @@ public class NoticeManager : MonoBehaviour
             {
                 Notice_ST_Start.SetActive(false);
                 ST.Term_ProceedTask = true;
-                Term_NewCondition = false;
+                Term_Notice_NewCondition = false;
                 ThresholdTimer = 0;
             }
         }
@@ -169,20 +170,21 @@ public class NoticeManager : MonoBehaviour
             {
                 Notice_RT_Start.SetActive(false);
                 RT.Term_ProceedTask = true;
-                Term_NewCondition = false;
+                Term_Notice_NewCondition = false;
                 ThresholdTimer = 0;
             }
         }
     }
 
-    void ResetAtStart(){
+    void ResetAtStart()
+    {
         CreateCSVfile = false;
         ThresholdTimer = 0;
         SampleNumber = 0;
         BreakTimer = 0;
         Next = 0;
         Term_ExpStart = false;
-        Term_NewCondition = false;
+        Term_Notice_NewCondition = false;
         Term_BreakTime = false;
         Term_SelectSampleNumber = true;
     }

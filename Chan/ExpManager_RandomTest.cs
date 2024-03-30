@@ -16,6 +16,7 @@ public class ExpManager_RandomTest : MonoBehaviour
     public float RT_MinimumFRS;
     float ThresholdTimer;
     public bool Term_ProceedTask;
+    public float TotalTestTime;
 
     void Start()
     {
@@ -31,18 +32,16 @@ public class ExpManager_RandomTest : MonoBehaviour
     public void SetRandomTestCondition()
     {
         // 확인 필요, 마지막 5번 횟수 or 5번 reversal 할 때 당시의 foveation?
-        for (int i = 0; i < 5; i++)
-        {
-            ST_AverageFRS += ST.LastFiveAnswers[i];
-        }
-        ST_AverageFRS = Mathf.Floor(ST_AverageFRS / 5);
-        RT_MinimumFRS = ST_AverageFRS;
+        foreach (float value in ST.LastFiveAnswers)
+            ST_AverageFRS += value;
+
+        RT_MinimumFRS = Mathf.Floor(ST_AverageFRS / 5);
     }
 
     void AdjustFoveation()
     {
-
         ThresholdTimer += Time.deltaTime;
+        TotalTestTime += Time.deltaTime;
 
         if (ThresholdTimer >= 1)
         {
@@ -52,18 +51,29 @@ public class ExpManager_RandomTest : MonoBehaviour
                 ThresholdTimer = 0;
                 User.Term_AdjustFoveation = true;
             }
-            if (Input.GetKeyDown(KeyCode.K) && RT_MinimumFRS > ST_AverageFRS)
+            if (Input.GetKeyDown(KeyCode.K) && User.CameraFOV > RT_MinimumFRS)
             {
                 User.CameraFOV -= 5;
                 ThresholdTimer = 0;
                 User.Term_AdjustFoveation = true;
             }
-            if (Input.GetKeyDown(KeyCode.K))
+            if (Input.GetKeyDown(KeyCode.K)) // save
             {
-                NM.Term_BreakTime = true;
+                Term_ProceedTask = false;
                 CSV_P.Save_CSV_Analysis();
                 BlockEnd_RandomTest();
             }
+        }
+    }
+
+    public void BlockEnd_RandomTest()
+    {
+        if (ST.ConditionCount == 4)
+            ExpEnd();
+        else
+        {
+            NM.Term_BreakTime = true;
+            ResetValue();
         }
     }
 
@@ -73,18 +83,7 @@ public class ExpManager_RandomTest : MonoBehaviour
         RT_MinimumFRS = 0;
         ThresholdTimer = 0;
         PlayerAnswer = 0;
-    }
-
-    public void BlockEnd_RandomTest()
-    {
-        if (ST.ConditionCount == 4)
-            ExpEnd();
-        else
-        {
-            ST.ChangeCondition();
-            NM.Term_BreakTime = true;
-            ResetValue();
-        }
+        TotalTestTime = 0;
     }
 
     void ExpEnd()
