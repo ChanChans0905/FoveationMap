@@ -3,36 +3,43 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using UnityEditor.Build.Content;
+using System.Data.Common;
 
 public class CSV_Save_Processed : MonoBehaviour
 {
-    [SerializeField] ExpManager ExpManager;
+    [SerializeField] ExpManager_SliderTest ST;
+    [SerializeField] ExpManager_RandomTest RT;
+    [SerializeField] NoticeManager NT;
+    [SerializeField] GetUserPositionToShader User;
     // 저장 데이터 : Condition, Task, 이미지 순서, foveation, 정답 여부, 
     string[] csvHeaders = new string[] { "Data Name" };
-    float[] DataArray = new float[10];
+    float[] DA_ST = new float[10];
+    float[] DA_RT = new float[10];
     string FilePath;
-    
 
     public void Save_CSV_Analysis()
     {
-        SaveDataIntoArray();
-        AppendToCsv(DataArray);
-    }
-
-    private void SaveDataIntoArray()
-    {
         // number of trial, 자극 수준, 답변까지의 소요 시간, 정답 영상 위치, 피험자 응답 위치, Y/N 결과, reversal 횟수, reversal 여부, 실시간 응시 위치, 한계조건, 한계조건 총 소요시간, 횟수
+        // condition, #of trial, 정답 영상 위치, 참가자 정답 입력 영상 위치, 정답 여부, reversal 여부, 
+        if (ST.Term_SliderTest)
+        {
+            DA_ST[0] = ST.ConditionList[ST.ConditionCount];
+            DA_ST[1] = ST.TaskCount;
+            DA_ST[2] = ST.ImageOrder;
+            DA_ST[3] = ST.PlayerAnswer;
+            DA_ST[4] = ST.IsCorrect;
+            DA_ST[5] = ST.ReversalAdded;
+            DA_ST[6] = ST.ReverseCount;
+            DA_ST[7] = User.CameraFOV;
+            AppendToCsv(DA_ST);
+        }
 
-        // DataArray[0] = DC.CMScombination[DC.CMSchangeCount - 1];
-        // DataArray[1] = DC.taskCount;
-        // DataArray[2] = DC.TaskScenario[DC.CMSchangeCount - 1, DC.taskCount];
-        // DataArray[3] = DC.LaneChangeTime[DC.CMSchangeCount - 1, DC.taskCount];
-        // DataArray[4] = DC.FollowingCarSpeed[DC.CMSchangeCount - 1, DC.taskCount];
-        // DataArray[5] = Log_LaneChangeComplete;
-        // DataArray[6] = Log_FirstReactionTime;
-        // DataArray[7] = DC.NumOfCollision;
-        // DataArray[8] = RayCaster.EOR_Time;
-        // DataArray[9] = RayCaster.NumberOfGlances;
+        if (RT.Term_RandomTest)
+        {
+            DA_RT[0] = RT.PlayerAnswer;
+            AppendToCsv(DA_RT);
+        }
+
     }
 
     public void AppendToCsv(float[] data)
@@ -59,7 +66,7 @@ public class CSV_Save_Processed : MonoBehaviour
         string dir = Application.dataPath + "/" + csvDirectoryName;
         Directory.CreateDirectory(dir);
 
-        string csvFileName = "FoveationMap_DataForAnalysis" + ExpManager.SampleNumber + ".csv";
+        string csvFileName = "FoveationMap_DataForAnalysis" + NT.SampleNumber + ".csv";
         FilePath = Application.dataPath + "/" + csvDirectoryName + "/" + csvFileName;
 
         using (StreamWriter sw = File.CreateText(FilePath))
