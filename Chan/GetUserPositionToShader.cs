@@ -5,13 +5,13 @@ using UnityEngine;
 
 public class GetUserPositionToShader : MonoBehaviour
 {
-    [SerializeField] Raycast Raycast;
     [SerializeField] ExpManager_SliderTest ST;
     [SerializeField] ExpManager_RandomTest RT;
+    [SerializeField] Raycast Raycast;
     float FoveaRegionSize;
     public bool Term_AdjustFoveation;
     public float CameraFOV;
-    Vector3 UserGazePoint;
+    public Vector3 UserGazePoint;
     Material ObjectMaterial;
 
     void Start()

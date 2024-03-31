@@ -6,17 +6,16 @@ using UnityEngine;
 
 public class ExpManager_SliderTest : MonoBehaviour
 {
-    [SerializeField] ExpManager_RandomTest RT;
-    [SerializeField] CSV_Save_Processed CSV_P;
     [SerializeField] NoticeManager NM;
+    [SerializeField] ExpManager_RandomTest RT;
     [SerializeField] GetUserPositionToShader User;
+    [SerializeField] CSV_Save_Processed CSV_P;
     public int[] ConditionList = new int[4];
     public List<float> LastFiveAnswers = new List<float>();
     public int ImageOrder;
     float TaskTimer;
     public int ReverseCount;
     public int PlayerAnswer;
-    public int OriginNum; // Task 당시의 원본 이미지 번호
     public int IsCorrect; // 사용자 선택이 정답인지 아닌지
     public int PreviousAnswer; // 직전 task 정답 여부
     public bool DecreaseFoveaRegionSize; // True : 내림, False : 올림
@@ -24,11 +23,11 @@ public class ExpManager_SliderTest : MonoBehaviour
     bool Term_InputAnswer; // 사용자 입력 가능 시기
     public int TaskCount, ConditionCount;
     public Scenario CurrentScenario;
-    public GameObject Text_Texture1, Text_Texture2; // 각 이미지 '1번입니다, 2번입니다' 안내
+    public GameObject Notice_OpenFirstImage, Notice_OpenSecondImage; // 각 이미지 '1번입니다, 2번입니다' 안내
     public bool Term_ProceedTask;
     public float AnsweringTimer;
     bool AddAnsweringTimer;
-    bool Trigger_ChangeImageOrder;
+    bool Term_ChangeImageOrder;
     public int ReversalAdded;
     public bool Term_SliderTest;
 
@@ -36,6 +35,7 @@ public class ExpManager_SliderTest : MonoBehaviour
     {
         ResetAtStart();
 
+        // 1. Cinema 2. UI 3. Web 4. Game
         ConditionList = new int[] { 1, 2, 3, 4 };
         ShuffleArray(ConditionList);
     }
@@ -48,7 +48,7 @@ public class ExpManager_SliderTest : MonoBehaviour
                 ProceedTask();
 
             if (Term_InputAnswer)
-                GetAnswer();
+                GetUserAnswer();
         }
     }
 
@@ -73,19 +73,19 @@ public class ExpManager_SliderTest : MonoBehaviour
     {
         TaskTimer += Time.deltaTime;
 
-        if (Trigger_ChangeImageOrder)
+        if (Term_ChangeImageOrder)
         {
             ImageOrder = UnityEngine.Random.Range(0, 2);
-            Trigger_ChangeImageOrder = false;
+            Term_ChangeImageOrder = false;
         }
 
-        if (TaskTimer < 3)
-            if (TaskTimer < 2)
-                Text_Texture1.SetActive(true);
+        if (TaskTimer < 2)
+            if (TaskTimer < 1.5f)
+                Notice_OpenFirstImage.SetActive(true);
             else
-                Text_Texture1.SetActive(false);
+                Notice_OpenFirstImage.SetActive(false);
 
-        if (TaskTimer > 3 && TaskTimer < 8)
+        if (TaskTimer > 2 && TaskTimer < 8)
         {
             if (ImageOrder == 1)
                 ShowTexture_Origin(CurrentScenario);
@@ -95,9 +95,9 @@ public class ExpManager_SliderTest : MonoBehaviour
 
         if (TaskTimer > 9 && TaskTimer < 12)
             if (TaskTimer < 11)
-                Text_Texture2.SetActive(true);
+                Notice_OpenSecondImage.SetActive(true);
             else
-                Text_Texture2.SetActive(false);
+                Notice_OpenSecondImage.SetActive(false);
 
         if (TaskTimer > 12 && TaskTimer < 17)
         {
@@ -113,6 +113,7 @@ public class ExpManager_SliderTest : MonoBehaviour
         if (TaskTimer > 17)
         {
             Term_InputAnswer = true;
+            AddAnsweringTimer = true;
             Term_ProceedTask = false;
         }
     }
@@ -153,7 +154,7 @@ public class ExpManager_SliderTest : MonoBehaviour
         Game_F.SetActive(false);
     }
 
-    void GetAnswer()
+    void GetUserAnswer()
     {
         if (AddAnsweringTimer)
             AnsweringTimer += Time.deltaTime;
@@ -161,20 +162,20 @@ public class ExpManager_SliderTest : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.S))
         {
             AddAnsweringTimer = false;
-            PlayerAnswer = 1;
+            PlayerAnswer = 0;
             CheckAnswer(PlayerAnswer);
         }
         else if (Input.GetKeyDown(KeyCode.D))
         {
             AddAnsweringTimer = false;
-            PlayerAnswer = 2;
+            PlayerAnswer = 1;
             CheckAnswer(PlayerAnswer);
         }
     }
 
     void CheckAnswer(int PlayerAnswer)
     {
-        if (PlayerAnswer == OriginNum)
+        if (PlayerAnswer == ImageOrder)
         {
             IsCorrect = 1;
             DecreaseFoveaRegionSize = true;
@@ -188,6 +189,7 @@ public class ExpManager_SliderTest : MonoBehaviour
         CheckReverseCount();
         CSV_P.Save_CSV_Analysis();
 
+        // 확인 필요
         if (ReverseCount >= 8)
         {
             LastFiveAnswers[TaskCount - 8] = User.CameraFOV;
@@ -200,7 +202,7 @@ public class ExpManager_SliderTest : MonoBehaviour
         AdjustFoveation(DecreaseFoveaRegionSize);
         Term_InputAnswer = false;
         ReversalAdded = 0;
-        Trigger_ChangeImageOrder = true;
+        Term_ChangeImageOrder = true;
 
         if (ReverseCount != 12)
             Term_ProceedTask = true;
@@ -212,15 +214,18 @@ public class ExpManager_SliderTest : MonoBehaviour
     {
         if (PreviousAnswer != IsCorrect)
         {
-            ReversalAdded = 1;
-            ReverseCount++;
+            if (TaskCount != 0)
+            {
+                ReversalAdded = 1;
+                ReverseCount++;
+            }
             PreviousAnswer = IsCorrect;
         }
     }
 
-    void AdjustFoveation(bool FoveationUpOrDown)
+    void AdjustFoveation(bool DecreaseFoveaRegionSize)
     {
-        if (FoveationUpOrDown)
+        if (DecreaseFoveaRegionSize)
             User.CameraFOV -= 5;
         else
             User.CameraFOV += 5;
@@ -269,7 +274,6 @@ public class ExpManager_SliderTest : MonoBehaviour
         TaskTimer = 0;
         ReverseCount = 0;
         PlayerAnswer = 0;
-        OriginNum = 0;
         IsCorrect = 0;
         PreviousAnswer = 0;
         DecreaseFoveaRegionSize = false;
@@ -279,7 +283,7 @@ public class ExpManager_SliderTest : MonoBehaviour
         Term_ProceedTask = false;
         AnsweringTimer = 0;
         AddAnsweringTimer = false;
-        Trigger_ChangeImageOrder = false;
+        Term_ChangeImageOrder = false;
         ReversalAdded = 0;
         Term_SliderTest = true;
     }

@@ -6,9 +6,10 @@ using UnityEngine.UI;
 
 public class NoticeManager : MonoBehaviour
 {
-    [SerializeField] CSV_Save_Processed CSV_P;
     [SerializeField] ExpManager_SliderTest ST;
     [SerializeField] ExpManager_RandomTest RT;
+    [SerializeField] CSV_Save_Processed CSV_P;
+    [SerializeField] CSV_Save_Raw CSV_R;
     public GameObject Notice_SelectSample, Notice_Welcome, Notice_GameStart;
     public GameObject Notice_ST_BreakStart, Notice_ST_Start;
     public GameObject Notice_RT_BreakStart, Notice_RT_Start;
@@ -38,6 +39,7 @@ public class NoticeManager : MonoBehaviour
         if (CreateCSVfile)
         {
             CSV_P.New_CSV_File();
+            CSV_R.New_CSV_File();
             ST.ChangeCondition();
             CreateCSVfile = false;
         }

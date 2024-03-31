@@ -5,24 +5,22 @@ using System.IO;
 using UnityEditor.Build.Content;
 using System.Data.Common;
 
-public class CSV_Save_Processed : MonoBehaviour
+public class CSV_Save_Raw : MonoBehaviour
 {
     [SerializeField] NoticeManager NM;
     [SerializeField] ExpManager_SliderTest ST;
     [SerializeField] ExpManager_RandomTest RT;
     [SerializeField] GetUserPositionToShader User;
-    // 저장 데이터 : Condition, Task, 이미지 순서, foveation, 정답 여부, 
+    [SerializeField] CSV_Save_Processed CSV_P;
     string[] csvHeaders = new string[] { "Data Name" };
     float[] DA_ST = new float[10];
     float[] DA_RT = new float[10];
     string csvFileName;
     string FilePath;
 
-    public void Save_CSV_Analysis()
+    void FixedUpdate()
     {
-        // number of trial, 자극 수준, 답변까지의 소요 시간, 정답 영상 위치, 피험자 응답 위치, Y/N 결과, reversal 횟수, reversal 여부, 실시간 응시 위치, 한계조건, 한계조건 총 소요시간, 횟수
-        // condition, #of trial, 정답 영상 위치, 참가자 정답 입력 영상 위치, 정답 여부, reversal 여부, 
-        if (ST.Term_SliderTest)
+        if (ST.Term_ProceedTask)
         {
             DA_ST[0] = ST.ConditionList[ST.ConditionCount];
             DA_ST[1] = ST.TaskCount;
@@ -32,19 +30,23 @@ public class CSV_Save_Processed : MonoBehaviour
             DA_ST[5] = ST.ReversalAdded;
             DA_ST[6] = ST.ReverseCount;
             DA_ST[7] = User.CameraFOV;
+            DA_ST[8] = User.UserGazePoint.x;
+            DA_ST[8] = User.UserGazePoint.y;
+            DA_ST[8] = User.UserGazePoint.z;
             AppendToCsv(DA_ST);
         }
-
-        if (RT.Term_RandomTest)
+        else if (RT.Term_ProceedTask)
         {
             DA_RT[0] = RT.PlayerAnswer;
             DA_RT[1] = RT.TotalTestTime;
             DA_RT[2] = RT.RT_MinimumFRS;
             DA_RT[3] = User.CameraFOV;
             DA_RT[4] = RT.AdjustmentCount;
+            DA_RT[8] = User.UserGazePoint.x;
+            DA_RT[8] = User.UserGazePoint.y;
+            DA_RT[8] = User.UserGazePoint.z;
             AppendToCsv(DA_RT);
         }
-
     }
 
     public void AppendToCsv(float[] data)
@@ -67,15 +69,15 @@ public class CSV_Save_Processed : MonoBehaviour
 
     public void New_CSV_File()
     {
-        string csvDirectoryName = "ProcessedData";
+        string csvDirectoryName = "RawData";
         string dir = Application.dataPath + "/" + csvDirectoryName;
         Directory.CreateDirectory(dir);
 
         if (ST.Term_SliderTest)
-            csvFileName = "FM_PD_SampleNumber_" + NM.SampleNumber + "_Condition_" + ST.ConditionList[ST.ConditionCount] + "_SliderTest" + ".csv";
+            csvFileName = "FM_RD_SampleNumber_" + NM.SampleNumber + "_Condition_" + ST.ConditionList[ST.ConditionCount] + "_SliderTest" + ".csv";
 
         if (RT.Term_RandomTest)
-            csvFileName = "FM_PD_SampleNumber_" + NM.SampleNumber + "_Condition_" + ST.ConditionList[ST.ConditionCount] + "_RandomTest" + ".csv";
+            csvFileName = "FM_RD_SampleNumber_" + NM.SampleNumber + "_Condition_" + ST.ConditionList[ST.ConditionCount] + "_RandomTest" + ".csv";
 
         FilePath = Application.dataPath + "/" + csvDirectoryName + "/" + csvFileName;
 

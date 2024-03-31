@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class ExpManager_RandomTest : MonoBehaviour
 {
+    [SerializeField] NoticeManager NM;
     [SerializeField] ExpManager_SliderTest ST;
     [SerializeField] CSV_Save_Processed CSV_P;
-    [SerializeField] NoticeManager NM;
     [SerializeField] GetUserPositionToShader User;
     public GameObject Notice_ExpEnd;
     public bool Term_RandomTest;
@@ -17,6 +17,7 @@ public class ExpManager_RandomTest : MonoBehaviour
     float ThresholdTimer;
     public bool Term_ProceedTask;
     public float TotalTestTime;
+    public int AdjustmentCount;
 
     void Start()
     {
@@ -35,7 +36,7 @@ public class ExpManager_RandomTest : MonoBehaviour
         foreach (float value in ST.LastFiveAnswers)
             ST_AverageFRS += value;
 
-        RT_MinimumFRS = Mathf.Floor(ST_AverageFRS / 5);
+        RT_MinimumFRS = ST_AverageFRS / 5;
     }
 
     void AdjustFoveation()
@@ -49,12 +50,14 @@ public class ExpManager_RandomTest : MonoBehaviour
             {
                 User.CameraFOV += 5;
                 ThresholdTimer = 0;
+                AdjustmentCount++;
                 User.Term_AdjustFoveation = true;
             }
             if (Input.GetKeyDown(KeyCode.K) && User.CameraFOV > RT_MinimumFRS)
             {
                 User.CameraFOV -= 5;
                 ThresholdTimer = 0;
+                AdjustmentCount++;
                 User.Term_AdjustFoveation = true;
             }
             if (Input.GetKeyDown(KeyCode.K)) // save
@@ -84,6 +87,7 @@ public class ExpManager_RandomTest : MonoBehaviour
         ThresholdTimer = 0;
         PlayerAnswer = 0;
         TotalTestTime = 0;
+        AdjustmentCount = 0;
     }
 
     void ExpEnd()
