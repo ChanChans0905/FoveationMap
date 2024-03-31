@@ -1,0 +1,1 @@
+'C:/Users/dlgoc/Downloads/Spyder/data.txt'
