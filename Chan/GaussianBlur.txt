@@ -1,0 +1,19 @@
+                float2 center = float2(0.5, 0.5); // Assuming center for simplicity
+                float dis = distance(i.uv, center);
+                float sigma = max(0.02, dis * 0.1); // Adjust this based on your needs
+
+                int steps = 12; // More steps = more blur, but more performance cost
+                float2 step_uv = float2(sigma / steps, sigma / steps);
+
+                for(int x = -steps; x <= steps; x++)
+                {
+                    for(int y = -steps; y <= steps; y++)
+                    {
+                        float weight = 1.0 / (2.0 * 3.14159265 * sigma * sigma);
+                        weight *= exp(-((x * x + y * y) / (2.0 * sigma * sigma)));
+                        TextureColor += tex2D(_MainTex, i.uv + step_uv * float2(x, y)) * weight;
+                    }
+                }
+
+
+                TextureColor /= (float)((steps * 2 + 1) * (steps * 2 + 1));

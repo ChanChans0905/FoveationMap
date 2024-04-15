@@ -10,39 +10,45 @@ public class CSV_Save_Processed : MonoBehaviour
     [SerializeField] NoticeManager NM;
     [SerializeField] ExpManager_SliderTest ST;
     [SerializeField] ExpManager_RandomTest RT;
-    [SerializeField] GetUserPositionToShader User;
+    [SerializeField] UserGazePostionAndAdjustFOV User;
     // 저장 데이터 : Condition, Task, 이미지 순서, foveation, 정답 여부, 
-    string[] csvHeaders = new string[] { "Data Name" };
+    string[] csvHeaders = new string[] { "Scenario", "TaskCount", "ImageOrder", "PlayerAnswer",
+                                    "IsCorrect", "ReversalAdded", "ReverseCount", "FoveaRegionSize " };
     float[] DA_ST = new float[10];
     float[] DA_RT = new float[10];
     string csvFileName;
     string FilePath;
+    public bool CSV_bool;
+
+    void FixedUpdate()
+    {
+        if (CSV_bool)
+            New_CSV_File();
+    }
 
     public void Save_CSV_Analysis()
     {
         // number of trial, 자극 수준, 답변까지의 소요 시간, 정답 영상 위치, 피험자 응답 위치, Y/N 결과, reversal 횟수, reversal 여부, 실시간 응시 위치, 한계조건, 한계조건 총 소요시간, 횟수
         // condition, #of trial, 정답 영상 위치, 참가자 정답 입력 영상 위치, 정답 여부, reversal 여부, 
-        if (ST.Term_SliderTest)
-        {
-            DA_ST[0] = ST.ConditionList[ST.ConditionCount];
-            DA_ST[1] = ST.TaskCount;
-            DA_ST[2] = ST.ImageOrder;
-            DA_ST[3] = ST.PlayerAnswer;
-            DA_ST[4] = ST.IsCorrect;
-            DA_ST[5] = ST.ReversalAdded;
-            DA_ST[6] = ST.ReverseCount;
-            DA_ST[7] = User.CameraFOV;
-            AppendToCsv(DA_ST);
-        }
 
         if (RT.Term_RandomTest)
         {
-            DA_RT[0] = RT.PlayerAnswer;
-            DA_RT[1] = RT.TotalTestTime;
-            DA_RT[2] = RT.RT_MinimumFRS;
-            DA_RT[3] = User.CameraFOV;
-            DA_RT[4] = RT.AdjustmentCount;
+            DA_RT[0] = RT.ConditionList[RT.ConditionCount];
+            DA_RT[1] = RT.TaskCount;
+            DA_RT[2] = RT.ImageOrder;
+            DA_RT[3] = RT.PlayerAnswer;
+            DA_RT[4] = RT.IsCorrect;
+            DA_RT[7] = User.CameraFOV;
             AppendToCsv(DA_RT);
+        }
+        else if (ST.Term_SliderTest)
+        {
+            DA_ST[0] = ST.PlayerAnswer;
+            DA_ST[1] = ST.TotalTestTime;
+            DA_ST[2] = ST.ST_MinimumFRS;
+            DA_ST[3] = User.CameraFOV;
+            DA_ST[4] = ST.AdjustmentCount;
+            AppendToCsv(DA_ST);
         }
 
     }
@@ -72,10 +78,10 @@ public class CSV_Save_Processed : MonoBehaviour
         Directory.CreateDirectory(dir);
 
         if (ST.Term_SliderTest)
-            csvFileName = "FM_PD_SampleNumber_" + NM.SampleNumber + "_Condition_" + ST.ConditionList[ST.ConditionCount] + "_SliderTest" + ".csv";
+            csvFileName = "FM_RD_SampleNumber_" + NM.SampleNumber + "_Condition_" + RT.ConditionList[RT.ConditionCount] + "_SliderTest" + ".csv";
 
         if (RT.Term_RandomTest)
-            csvFileName = "FM_PD_SampleNumber_" + NM.SampleNumber + "_Condition_" + ST.ConditionList[ST.ConditionCount] + "_RandomTest" + ".csv";
+            csvFileName = "FM_RD_SampleNumber_" + NM.SampleNumber + "_Condition_" + RT.ConditionList[RT.ConditionCount] + "_RandomTest" + ".csv";
 
         FilePath = Application.dataPath + "/" + csvDirectoryName + "/" + csvFileName;
 

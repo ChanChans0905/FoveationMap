@@ -10,7 +10,7 @@ public class CSV_Save_Raw : MonoBehaviour
     [SerializeField] NoticeManager NM;
     [SerializeField] ExpManager_SliderTest ST;
     [SerializeField] ExpManager_RandomTest RT;
-    [SerializeField] GetUserPositionToShader User;
+    [SerializeField] UserGazePostionAndAdjustFOV User;
     [SerializeField] CSV_Save_Processed CSV_P;
     string[] csvHeaders = new string[] { "Data Name" };
     float[] DA_ST = new float[10];
@@ -20,32 +20,24 @@ public class CSV_Save_Raw : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (ST.Term_ProceedTask)
+        if (RT.Term_RT_ProceedTask)
         {
-            DA_ST[0] = ST.ConditionList[ST.ConditionCount];
-            DA_ST[1] = ST.TaskCount;
-            DA_ST[2] = ST.ImageOrder;
-            DA_ST[3] = ST.PlayerAnswer;
-            DA_ST[4] = ST.IsCorrect;
-            DA_ST[5] = ST.ReversalAdded;
-            DA_ST[6] = ST.ReverseCount;
-            DA_ST[7] = User.CameraFOV;
-            DA_ST[8] = User.UserGazePoint.x;
-            DA_ST[8] = User.UserGazePoint.y;
-            DA_ST[8] = User.UserGazePoint.z;
-            AppendToCsv(DA_ST);
-        }
-        else if (RT.Term_ProceedTask)
-        {
-            DA_RT[0] = RT.PlayerAnswer;
-            DA_RT[1] = RT.TotalTestTime;
-            DA_RT[2] = RT.RT_MinimumFRS;
-            DA_RT[3] = User.CameraFOV;
-            DA_RT[4] = RT.AdjustmentCount;
-            DA_RT[8] = User.UserGazePoint.x;
-            DA_RT[8] = User.UserGazePoint.y;
-            DA_RT[8] = User.UserGazePoint.z;
+            DA_RT[0] = RT.ConditionList[RT.ConditionCount];
+            DA_RT[1] = RT.TaskCount;
+            DA_RT[2] = RT.ImageOrder;
+            DA_RT[3] = RT.PlayerAnswer;
+            DA_RT[4] = RT.IsCorrect;
+            DA_RT[5] = User.CameraFOV;
             AppendToCsv(DA_RT);
+        }
+        else if (ST.Term_ST_ProceedTask)
+        {
+            DA_ST[0] = ST.PlayerAnswer;
+            DA_ST[1] = ST.TotalTestTime;
+            DA_ST[2] = ST.ST_MinimumFRS;
+            DA_ST[3] = User.CameraFOV;
+            DA_ST[4] = ST.AdjustmentCount;
+            AppendToCsv(DA_ST);
         }
     }
 
@@ -73,11 +65,11 @@ public class CSV_Save_Raw : MonoBehaviour
         string dir = Application.dataPath + "/" + csvDirectoryName;
         Directory.CreateDirectory(dir);
 
-        if (ST.Term_SliderTest)
-            csvFileName = "FM_RD_SampleNumber_" + NM.SampleNumber + "_Condition_" + ST.ConditionList[ST.ConditionCount] + "_SliderTest" + ".csv";
-
         if (RT.Term_RandomTest)
-            csvFileName = "FM_RD_SampleNumber_" + NM.SampleNumber + "_Condition_" + ST.ConditionList[ST.ConditionCount] + "_RandomTest" + ".csv";
+            csvFileName = "FM_RD_SampleNumber_" + NM.SampleNumber + "_Condition_" + RT.ConditionList[RT.ConditionCount] + "_RandomTest_TaskCount" + RT.TaskCount + ".csv";
+
+        if (ST.Term_SliderTest)
+            csvFileName = "FM_SD_SampleNumber_" + NM.SampleNumber + "_Condition_" + RT.ConditionList[RT.ConditionCount] + "_SliderTest_Task" + ".csv";
 
         FilePath = Application.dataPath + "/" + csvDirectoryName + "/" + csvFileName;
 

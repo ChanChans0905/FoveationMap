@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,7 +14,8 @@ public class NoticeManager : MonoBehaviour
     public GameObject Notice_SelectSample, Notice_Welcome, Notice_GameStart;
     public GameObject Notice_ST_BreakStart, Notice_ST_Start;
     public GameObject Notice_RT_BreakStart, Notice_RT_Start;
-    public Text Text_SampleNumber;
+    //public Text Text_SampleNumber;
+    public TextMeshProUGUI Text_SampleNumber;
     bool CreateCSVfile;
     float ThresholdTimer;
     public int SampleNumber;
@@ -28,9 +30,9 @@ public class NoticeManager : MonoBehaviour
         ResetAtStart();
     }
 
-    void FixedUpdate()
+    void Update()
     {
-        if (Term_SelectSampleNumber && ThresholdTimer > 0.3f)
+        if (Term_SelectSampleNumber)
             SelectSampleNumber();
 
         if (Term_ExpStart)
@@ -40,7 +42,7 @@ public class NoticeManager : MonoBehaviour
         {
             CSV_P.New_CSV_File();
             CSV_R.New_CSV_File();
-            ST.ChangeCondition();
+            RT.ChangeCondition();
             CreateCSVfile = false;
         }
 
@@ -53,42 +55,38 @@ public class NoticeManager : MonoBehaviour
 
     void SelectSampleNumber()
     {
-        if (Input.GetKeyDown(KeyCode.K))
+        ThresholdTimer += Time.deltaTime;
+
+        if (ThresholdTimer > 0.3f)
         {
-            SampleNumber++;
-            ThresholdTimer = 0;
-        }
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            SampleNumber--;
-            ThresholdTimer = 0;
-        }
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            SampleNumber += 10;
-            ThresholdTimer = 0;
-        }
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            SampleNumber -= 10;
-            ThresholdTimer = 0;
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                SampleNumber++;
+                ThresholdTimer = 0;
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha1) && SampleNumber > 0)
+            {
+                SampleNumber--;
+                ThresholdTimer = 0;
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                Term_ExpStart = true;
+                Term_SelectSampleNumber = false;
+                Notice_SelectSample.SetActive(false);
+                Notice_Welcome.SetActive(true);
+                ThresholdTimer = 0;
+            }
+            Text_SampleNumber.text = SampleNumber.ToString();
         }
 
-        Text_SampleNumber.text = SampleNumber.ToString();
-
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            Term_ExpStart = true;
-            Term_SelectSampleNumber = false;
-            Notice_SelectSample.SetActive(false);
-            Notice_Welcome.SetActive(true);
-            ThresholdTimer = 0;
-        }
     }
 
     void ExpStart()
     {
-        if (ThresholdTimer > 1.0f && Input.GetKeyDown(KeyCode.K))
+        ThresholdTimer += Time.deltaTime;
+
+        if (ThresholdTimer > 0.1f && Input.GetKeyDown(KeyCode.Alpha2))
         {
             Next++;
             ThresholdTimer = 0;
@@ -122,6 +120,7 @@ public class NoticeManager : MonoBehaviour
             {
                 Notice_ST_BreakStart.SetActive(false);
                 ST.Term_SliderTest = false;
+                RT.ConditionCount++;
                 RT.Term_RandomTest = true;
                 CreateCSVfile = true;
                 BreakTimer = 0;
@@ -155,10 +154,10 @@ public class NoticeManager : MonoBehaviour
         {
             Notice_ST_Start.SetActive(true);
 
-            if (Input.GetKeyDown(KeyCode.K) && ThresholdTimer > 2f)
+            if (Input.GetKeyDown(KeyCode.Alpha2) && ThresholdTimer > 1.5f)
             {
                 Notice_ST_Start.SetActive(false);
-                ST.Term_ProceedTask = true;
+                ST.Term_ST_ProceedTask = true;
                 Term_Notice_NewCondition = false;
                 ThresholdTimer = 0;
             }
@@ -168,10 +167,10 @@ public class NoticeManager : MonoBehaviour
         {
             Notice_RT_Start.SetActive(true);
 
-            if (Input.GetKeyDown(KeyCode.K) && ThresholdTimer > 2f)
+            if (Input.GetKeyDown(KeyCode.Alpha2) && ThresholdTimer > 1.5f)
             {
                 Notice_RT_Start.SetActive(false);
-                RT.Term_ProceedTask = true;
+                RT.Term_RT_ProceedTask = true;
                 Term_Notice_NewCondition = false;
                 ThresholdTimer = 0;
             }
