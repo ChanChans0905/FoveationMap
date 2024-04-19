@@ -165,6 +165,7 @@ public class NoticeManager : MonoBehaviour
             else
             {
                 Notice_RT_BreakStart.SetActive(false);
+                ST.SetSliderTestCondition();
                 RT.Term_RandomTest = false;
                 ST.Term_SliderTest = true;
                 CreateCSVfile = true;
