@@ -29,20 +29,16 @@ public class UserGazePostionAndAdjustFOV : MonoBehaviour
         // transform.LookAt(GazeTarget);
 
         if (Physics.Raycast(transform.position, transform.forward, out hit) && hit.collider.CompareTag("2D_Screen"))
-        {
-            UserGazePoint = hit.point;
             if (Notice_LookAtTheImage.activeSelf == true)
                 Notice_LookAtTheImage.SetActive(false);
-        }
-        else
-        {
+            else
             if (Notice_LookAtTheImage.activeSelf == false)
                 Notice_LookAtTheImage.SetActive(true);
-        }
 
-        Vector3 forward = transform.TransformDirection(Vector3.forward) * 100;
+        UserGazePoint = hit.point;
+
+        Vector3 forward = transform.TransformDirection(Vector3.forward) * 20f;
         UnityEngine.Debug.DrawRay(transform.position, forward, Color.green);
-
     }
 
     public void AdjustFoveation()

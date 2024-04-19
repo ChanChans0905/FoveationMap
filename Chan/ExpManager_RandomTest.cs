@@ -211,16 +211,9 @@ public class ExpManager_RandomTest : MonoBehaviour
 
     void BlockEnd_RandomTest()
     {
-        ST.SetSliderTestCondition();
+        // ST.SetSliderTestCondition();
         NM.Term_BreakTime = true;
-        ResetValue();
-    }
-
-    void ResetValue()
-    {
-        TaskTimer = 0;
-        Term_InputAnswer = false;
-        Term_RT_ProceedTask = false;
+        ResetAtStart();
     }
 
     void ShuffleArray(int[] array)
@@ -250,7 +243,7 @@ public class ExpManager_RandomTest : MonoBehaviour
         AnsweringTimer = 0;
         Term_AddAnsweringTimer = false;
         Term_ChangeImageOrder = false;
-        Term_RandomTest = false;
+        Term_RandomTest = true;
     }
 
     public enum Scenario

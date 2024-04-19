@@ -79,7 +79,6 @@ public class NoticeManager : MonoBehaviour
             }
             Text_SampleNumber.text = SampleNumber.ToString();
         }
-
     }
 
     void ExpStart()
