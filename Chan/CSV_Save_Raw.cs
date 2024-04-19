@@ -66,10 +66,10 @@ public class CSV_Save_Raw : MonoBehaviour
         Directory.CreateDirectory(dir);
 
         if (RT.Term_RandomTest)
-            csvFileName = "FM_RD_SampleNumber_" + NM.SampleNumber + "_Condition_" + RT.ConditionList[RT.ConditionCount] + "_RandomTest_TaskCount" + RT.TaskCount + ".csv";
+            csvFileName = "FM_Sample_" + NM.SampleNumber + "_Con_" + RT.ConditionList[RT.ConditionCount] + "_RT_TaskCount" + RT.TaskCount + ".csv";
 
         if (ST.Term_SliderTest)
-            csvFileName = "FM_SD_SampleNumber_" + NM.SampleNumber + "_Condition_" + RT.ConditionList[RT.ConditionCount] + "_SliderTest_Task" + ".csv";
+            csvFileName = "FM_Sample_" + NM.SampleNumber + "_Con_" + RT.ConditionList[RT.ConditionCount] + "_ST" + ".csv";
 
         FilePath = Application.dataPath + "/" + csvDirectoryName + "/" + csvFileName;
 

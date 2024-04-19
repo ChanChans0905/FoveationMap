@@ -14,7 +14,6 @@ public class NoticeManager : MonoBehaviour
     public GameObject Notice_SelectSample, Notice_Welcome, Notice_GameStart;
     public GameObject Notice_ST_BreakStart, Notice_ST_Start;
     public GameObject Notice_RT_BreakStart, Notice_RT_Start;
-    //public Text Text_SampleNumber;
     public TextMeshProUGUI Text_SampleNumber;
     bool CreateCSVfile;
     float ThresholdTimer;
@@ -107,6 +106,37 @@ public class NoticeManager : MonoBehaviour
         }
     }
 
+    void Notice_NewCondition()
+    {
+        ThresholdTimer += Time.deltaTime;
+
+        if (ST.Term_SliderTest)
+        {
+            Notice_ST_Start.SetActive(true);
+
+            if (Input.GetKeyDown(KeyCode.Alpha2) && ThresholdTimer > 1.5f)
+            {
+                Notice_ST_Start.SetActive(false);
+                ST.Term_ST_ProceedTask = true;
+                Term_Notice_NewCondition = false;
+                ThresholdTimer = 0;
+            }
+        }
+
+        if (RT.Term_RandomTest)
+        {
+            Notice_RT_Start.SetActive(true);
+
+            if (Input.GetKeyDown(KeyCode.Alpha2) && ThresholdTimer > 1)
+            {
+                Notice_RT_Start.SetActive(false);
+                RT.Term_RT_ProceedTask = true;
+                Term_Notice_NewCondition = false;
+                ThresholdTimer = 0;
+            }
+        }
+    }
+
     void BreakTime()
     {
         BreakTimer += Time.deltaTime;
@@ -141,37 +171,6 @@ public class NoticeManager : MonoBehaviour
                 BreakTimer = 0;
                 Term_BreakTime = false;
                 Term_Notice_NewCondition = true;
-            }
-        }
-    }
-
-    void Notice_NewCondition()
-    {
-        ThresholdTimer += Time.deltaTime;
-
-        if (ST.Term_SliderTest)
-        {
-            Notice_ST_Start.SetActive(true);
-
-            if (Input.GetKeyDown(KeyCode.Alpha2) && ThresholdTimer > 1.5f)
-            {
-                Notice_ST_Start.SetActive(false);
-                ST.Term_ST_ProceedTask = true;
-                Term_Notice_NewCondition = false;
-                ThresholdTimer = 0;
-            }
-        }
-
-        if (RT.Term_RandomTest)
-        {
-            Notice_RT_Start.SetActive(true);
-
-            if (Input.GetKeyDown(KeyCode.Alpha2) && ThresholdTimer > 1.5f)
-            {
-                Notice_RT_Start.SetActive(false);
-                RT.Term_RT_ProceedTask = true;
-                Term_Notice_NewCondition = false;
-                ThresholdTimer = 0;
             }
         }
     }

@@ -39,7 +39,7 @@ public class ExpManager_RandomTest : MonoBehaviour
 
         // 1. Cinema 2. UI 3. Web 4. Game
         ConditionList = new int[] { 0, 1, 2, 3 };
-        // ShuffleArray(ConditionList);
+        ShuffleArray(ConditionList);
 
         // fovea region size 5 x peripheral region resolution 3
         // 25,30,35,40,45 x 1k,2k,3k 
@@ -242,7 +242,7 @@ public class ExpManager_RandomTest : MonoBehaviour
         Term_RT_ProceedTask = false;
         AnsweringTimer = 0;
         Term_AddAnsweringTimer = false;
-        Term_ChangeImageOrder = false;
+        Term_ChangeImageOrder = true;
         Term_RandomTest = true;
     }
 

@@ -15,7 +15,6 @@ public class UserGazePostionAndAdjustFOV : MonoBehaviour
     public Vector3 UserGazePoint;
     float DistanceFromTheScreen;
 
-
     void Start()
     {
         FoveaRegionSize = 0;

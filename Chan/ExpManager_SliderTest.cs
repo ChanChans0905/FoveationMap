@@ -57,7 +57,7 @@ public class ExpManager_SliderTest : MonoBehaviour
 
         if (ThresholdTimer >= 0.1f)
         {
-            if (Input.GetKeyDown(KeyCode.Alpha3) && User.CameraFOV < 65)
+            if (Input.GetKeyDown(KeyCode.Alpha3) && SliderCount < 15)
             {
                 SliderCount++;
                 PIC.TurnOffPeripheralImage();
@@ -66,7 +66,7 @@ public class ExpManager_SliderTest : MonoBehaviour
                 ThresholdTimer = 0;
                 AdjustmentCount++;
             }
-            if (Input.GetKeyDown(KeyCode.Alpha1) && User.CameraFOV > ST_MinimumFRS)
+            if (Input.GetKeyDown(KeyCode.Alpha1) && SliderCount > 0)
             {
                 SliderCount--;
                 PIC.TurnOffPeripheralImage();

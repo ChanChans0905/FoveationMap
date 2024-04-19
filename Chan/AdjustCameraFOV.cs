@@ -11,15 +11,17 @@ public class AdjustCameraFOV : MonoBehaviour
 
     public void RT_AdjustCameraFOV()
     {
-        if (RT.ConditionOrder[RT.ConditionCount] < 3)
+        int TC = RT.ConditionOrder[RT.TaskCount];
+
+        if (TC < 3)
             CameraFOV = 25;
-        else if (RT.ConditionOrder[RT.ConditionCount] < 6)
+        else if (TC < 6)
             CameraFOV = 30;
-        else if (RT.ConditionOrder[RT.ConditionCount] < 9)
+        else if (TC < 9)
             CameraFOV = 35;
-        else if (RT.ConditionOrder[RT.ConditionCount] < 12)
+        else if (TC < 12)
             CameraFOV = 40;
-        else if (RT.ConditionOrder[RT.ConditionCount] < 15)
+        else if (TC < 15)
             CameraFOV = 45;
 
         User.CameraFOV = CameraFOV;
@@ -28,15 +30,17 @@ public class AdjustCameraFOV : MonoBehaviour
 
     public void ST_AdjustCameraFOV()
     {
-        if (ST.SliderCount < 3)
+        int SC = ST.SliderCount;
+
+        if (SC < 3)
             CameraFOV = 45;
-        else if (ST.SliderCount < 6)
+        else if (SC < 6)
             CameraFOV = 40;
-        else if (ST.SliderCount < 9)
+        else if (SC < 9)
             CameraFOV = 35;
-        else if (ST.SliderCount < 12)
+        else if (SC < 12)
             CameraFOV = 30;
-        else if (ST.SliderCount < 15)
+        else if (SC < 15)
             CameraFOV = 25;
 
         User.CameraFOV = CameraFOV;

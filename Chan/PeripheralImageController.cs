@@ -14,38 +14,40 @@ public class PeripheralImageController : MonoBehaviour
 
     public void RT_TurnOnPeripheralImage()
     {
+        int TC = RT.ConditionOrder[RT.TaskCount];
+
         switch (RT.ConditionList[RT.ConditionCount])
         {
             case 0:
-                if (RT.ConditionOrder[RT.TaskCount] == 0 || RT.ConditionOrder[RT.TaskCount] == 3 || RT.ConditionOrder[RT.TaskCount] == 6 || RT.ConditionOrder[RT.TaskCount] == 9 || RT.ConditionOrder[RT.TaskCount] == 12)
+                if (TC == 0 || TC == 3 || TC == 6 || TC == 9 || TC == 12)
                     PeripheralImage_Cinema_1K.SetActive(true);
-                else if (RT.ConditionOrder[RT.TaskCount] == 1 || RT.ConditionOrder[RT.TaskCount] == 4 || RT.ConditionOrder[RT.TaskCount] == 7 || RT.ConditionOrder[RT.TaskCount] == 10 || RT.ConditionOrder[RT.TaskCount] == 13)
+                else if (TC == 1 || TC == 4 || TC == 7 || TC == 10 || TC == 13)
                     PeripheralImage_Cinema_2K.SetActive(true);
-                else if (RT.ConditionOrder[RT.TaskCount] == 2 || RT.ConditionOrder[RT.TaskCount] == 5 || RT.ConditionOrder[RT.TaskCount] == 8 || RT.ConditionOrder[RT.TaskCount] == 11 || RT.ConditionOrder[RT.TaskCount] == 14)
+                else if (TC == 2 || TC == 5 || TC == 8 || TC == 11 || TC == 14)
                     PeripheralImage_Cinema_3K.SetActive(true);
                 break;
             case 1:
-                if (RT.ConditionOrder[RT.TaskCount] == 0 || RT.ConditionOrder[RT.TaskCount] == 3 || RT.ConditionOrder[RT.TaskCount] == 6 || RT.ConditionOrder[RT.TaskCount] == 9 || RT.ConditionOrder[RT.TaskCount] == 12)
+                if (TC == 0 || TC == 3 || TC == 6 || TC == 9 || TC == 12)
                     PeripheralImage_UI_1K.SetActive(true);
-                else if (RT.ConditionOrder[RT.TaskCount] == 1 || RT.ConditionOrder[RT.TaskCount] == 4 || RT.ConditionOrder[RT.TaskCount] == 7 || RT.ConditionOrder[RT.TaskCount] == 10 || RT.ConditionOrder[RT.TaskCount] == 13)
+                else if (TC == 1 || TC == 4 || TC == 7 || TC == 10 || TC == 13)
                     PeripheralImage_UI_2K.SetActive(true);
-                else if (RT.ConditionOrder[RT.TaskCount] == 2 || RT.ConditionOrder[RT.TaskCount] == 5 || RT.ConditionOrder[RT.TaskCount] == 8 || RT.ConditionOrder[RT.TaskCount] == 11 || RT.ConditionOrder[RT.TaskCount] == 14)
+                else if (TC == 2 || TC == 5 || TC == 8 || TC == 11 || TC == 14)
                     PeripheralImage_UI_3K.SetActive(true);
                 break;
             case 2:
-                if (RT.ConditionOrder[RT.TaskCount] == 0 || RT.ConditionOrder[RT.TaskCount] == 3 || RT.ConditionOrder[RT.TaskCount] == 6 || RT.ConditionOrder[RT.TaskCount] == 9 || RT.ConditionOrder[RT.TaskCount] == 12)
+                if (TC == 0 || TC == 3 || TC == 6 || TC == 9 || TC == 12)
                     PeripheralImage_Web_1K.SetActive(true);
-                else if (RT.ConditionOrder[RT.TaskCount] == 1 || RT.ConditionOrder[RT.TaskCount] == 4 || RT.ConditionOrder[RT.TaskCount] == 7 || RT.ConditionOrder[RT.TaskCount] == 10 || RT.ConditionOrder[RT.TaskCount] == 13)
+                else if (TC == 1 || TC == 4 || TC == 7 || TC == 10 || TC == 13)
                     PeripheralImage_Web_2K.SetActive(true);
-                else if (RT.ConditionOrder[RT.TaskCount] == 2 || RT.ConditionOrder[RT.TaskCount] == 5 || RT.ConditionOrder[RT.TaskCount] == 8 || RT.ConditionOrder[RT.TaskCount] == 11 || RT.ConditionOrder[RT.TaskCount] == 14)
+                else if (TC == 2 || TC == 5 || TC == 8 || TC == 11 || TC == 14)
                     PeripheralImage_Web_3K.SetActive(true);
                 break;
             case 3:
-                if (RT.ConditionOrder[RT.TaskCount] == 0 || RT.ConditionOrder[RT.TaskCount] == 3 || RT.ConditionOrder[RT.TaskCount] == 6 || RT.ConditionOrder[RT.TaskCount] == 9 || RT.ConditionOrder[RT.TaskCount] == 12)
+                if (TC == 0 || TC == 3 || TC == 6 || TC == 9 || TC == 12)
                     PeripheralImage_Game_1K.SetActive(true);
-                else if (RT.ConditionOrder[RT.TaskCount] == 1 || RT.ConditionOrder[RT.TaskCount] == 4 || RT.ConditionOrder[RT.TaskCount] == 7 || RT.ConditionOrder[RT.TaskCount] == 10 || RT.ConditionOrder[RT.TaskCount] == 13)
+                else if (TC == 1 || TC == 4 || TC == 7 || TC == 10 || TC == 13)
                     PeripheralImage_Game_2K.SetActive(true);
-                else if (RT.ConditionOrder[RT.TaskCount] == 2 || RT.ConditionOrder[RT.TaskCount] == 5 || RT.ConditionOrder[RT.TaskCount] == 8 || RT.ConditionOrder[RT.TaskCount] == 11 || RT.ConditionOrder[RT.TaskCount] == 14)
+                else if (TC == 2 || TC == 5 || TC == 8 || TC == 11 || TC == 14)
                     PeripheralImage_Game_3K.SetActive(true);
                 break;
         }
@@ -80,38 +82,40 @@ public class PeripheralImageController : MonoBehaviour
 
     public void ST_TurnOnPeripheralImage()
     {
+        int SC = ST.SliderCount;
+
         switch (RT.ConditionList[RT.ConditionCount])
         {
             case 0:
-                if (ST.SliderCount == 0 || ST.SliderCount == 3 || ST.SliderCount == 6 || ST.SliderCount == 9 || ST.SliderCount == 12)
+                if (SC == 0 || SC == 3 || SC == 6 || SC == 9 || SC == 12)
                     PeripheralImage_Cinema_3K.SetActive(true);
-                else if (ST.SliderCount == 1 || ST.SliderCount == 4 || ST.SliderCount == 7 || ST.SliderCount == 10 || ST.SliderCount == 13)
+                else if (SC == 1 || SC == 4 || SC == 7 || SC == 10 || SC == 13)
                     PeripheralImage_Cinema_2K.SetActive(true);
-                else if (ST.SliderCount == 2 || ST.SliderCount == 5 || ST.SliderCount == 8 || ST.SliderCount == 11 || ST.SliderCount == 14)
+                else if (SC == 2 || SC == 5 || SC == 8 || SC == 11 || SC == 14)
                     PeripheralImage_Cinema_1K.SetActive(true);
                 break;
             case 1:
-                if (ST.SliderCount == 0 || ST.SliderCount == 3 || ST.SliderCount == 6 || ST.SliderCount == 9 || ST.SliderCount == 12)
+                if (SC == 0 || SC == 3 || SC == 6 || SC == 9 || SC == 12)
                     PeripheralImage_UI_3K.SetActive(true);
-                else if (ST.SliderCount == 1 || ST.SliderCount == 4 || ST.SliderCount == 7 || ST.SliderCount == 10 || ST.SliderCount == 13)
+                else if (SC == 1 || SC == 4 || SC == 7 || SC == 10 || SC == 13)
                     PeripheralImage_UI_2K.SetActive(true);
-                else if (ST.SliderCount == 2 || ST.SliderCount == 5 || ST.SliderCount == 8 || ST.SliderCount == 11 || ST.SliderCount == 14)
+                else if (SC == 2 || SC == 5 || SC == 8 || SC == 11 || SC == 14)
                     PeripheralImage_UI_1K.SetActive(true);
                 break;
             case 2:
-                if (ST.SliderCount == 0 || ST.SliderCount == 3 || ST.SliderCount == 6 || ST.SliderCount == 9 || ST.SliderCount == 12)
+                if (SC == 0 || SC == 3 || SC == 6 || SC == 9 || SC == 12)
                     PeripheralImage_Web_3K.SetActive(true);
-                else if (ST.SliderCount == 1 || ST.SliderCount == 4 || ST.SliderCount == 7 || ST.SliderCount == 10 || ST.SliderCount == 13)
+                else if (SC == 1 || SC == 4 || SC == 7 || SC == 10 || SC == 13)
                     PeripheralImage_Web_2K.SetActive(true);
-                else if (ST.SliderCount == 2 || ST.SliderCount == 5 || ST.SliderCount == 8 || ST.SliderCount == 11 || ST.SliderCount == 14)
+                else if (SC == 2 || SC == 5 || SC == 8 || SC == 11 || SC == 14)
                     PeripheralImage_Web_1K.SetActive(true);
                 break;
             case 3:
-                if (ST.SliderCount == 0 || ST.SliderCount == 3 || ST.SliderCount == 6 || ST.SliderCount == 9 || ST.SliderCount == 12)
+                if (SC == 0 || SC == 3 || SC == 6 || SC == 9 || SC == 12)
                     PeripheralImage_Game_3K.SetActive(true);
-                else if (ST.SliderCount == 1 || ST.SliderCount == 4 || ST.SliderCount == 7 || ST.SliderCount == 10 || ST.SliderCount == 13)
+                else if (SC == 1 || SC == 4 || SC == 7 || SC == 10 || SC == 13)
                     PeripheralImage_Game_2K.SetActive(true);
-                else if (ST.SliderCount == 2 || ST.SliderCount == 5 || ST.SliderCount == 8 || ST.SliderCount == 11 || ST.SliderCount == 14)
+                else if (SC == 2 || SC == 5 || SC == 8 || SC == 11 || SC == 14)
                     PeripheralImage_Game_1K.SetActive(true);
                 break;
         }
