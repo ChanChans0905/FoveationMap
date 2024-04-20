@@ -7,6 +7,7 @@ public class PeripheralImageController : MonoBehaviour
 {
     [SerializeField] ExpManager_RandomTest RT;
     [SerializeField] ExpManager_SliderTest ST;
+    [SerializeField] GameObject PIP_Cinema, PIP_UI, PIP_Web, PIP_Game;
     [SerializeField] GameObject PeripheralImage_Cinema_1K, PeripheralImage_Cinema_2K, PeripheralImage_Cinema_3K;
     [SerializeField] GameObject PeripheralImage_UI_1K, PeripheralImage_UI_2K, PeripheralImage_UI_3K;
     [SerializeField] GameObject PeripheralImage_Web_1K, PeripheralImage_Web_2K, PeripheralImage_Web_3K;
@@ -93,6 +94,7 @@ public class PeripheralImageController : MonoBehaviour
                     PeripheralImage_Cinema_2K.SetActive(true);
                 else if (SC == 2 || SC == 5 || SC == 8 || SC == 11 || SC == 14)
                     PeripheralImage_Cinema_1K.SetActive(true);
+                PIP_Cinema.SetActive(true);
                 break;
             case 1:
                 if (SC == 0 || SC == 3 || SC == 6 || SC == 9 || SC == 12)
@@ -101,6 +103,7 @@ public class PeripheralImageController : MonoBehaviour
                     PeripheralImage_UI_2K.SetActive(true);
                 else if (SC == 2 || SC == 5 || SC == 8 || SC == 11 || SC == 14)
                     PeripheralImage_UI_1K.SetActive(true);
+                PIP_UI.SetActive(true);
                 break;
             case 2:
                 if (SC == 0 || SC == 3 || SC == 6 || SC == 9 || SC == 12)
@@ -109,6 +112,7 @@ public class PeripheralImageController : MonoBehaviour
                     PeripheralImage_Web_2K.SetActive(true);
                 else if (SC == 2 || SC == 5 || SC == 8 || SC == 11 || SC == 14)
                     PeripheralImage_Web_1K.SetActive(true);
+                PIP_Web.SetActive(true);
                 break;
             case 3:
                 if (SC == 0 || SC == 3 || SC == 6 || SC == 9 || SC == 12)
@@ -117,7 +121,39 @@ public class PeripheralImageController : MonoBehaviour
                     PeripheralImage_Game_2K.SetActive(true);
                 else if (SC == 2 || SC == 5 || SC == 8 || SC == 11 || SC == 14)
                     PeripheralImage_Game_1K.SetActive(true);
+                PIP_Game.SetActive(true);
                 break;
         }
+    }
+
+    public void ST_TurnOnPI_AtStart()
+    {
+        switch (RT.ConditionList[RT.ConditionCount])
+        {
+            case 0:
+                PIP_Cinema.SetActive(true);
+                PeripheralImage_Cinema_3K.SetActive(true);
+                break;
+            case 1:
+                PIP_UI.SetActive(true);
+                PeripheralImage_UI_3K.SetActive(true);
+                break;
+            case 2:
+                PIP_Web.SetActive(true);
+                PeripheralImage_Web_3K.SetActive(true);
+                break;
+            case 3:
+                PIP_Game.SetActive(true);
+                PeripheralImage_Game_3K.SetActive(true);
+                break;
+        }
+    }
+
+    public void ST_TurnOffPeripheralImageParent()
+    {
+        PIP_Cinema.SetActive(false);
+        PIP_UI.SetActive(false);
+        PIP_Web.SetActive(false);
+        PIP_Game.SetActive(false);
     }
 }

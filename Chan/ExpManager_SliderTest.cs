@@ -56,12 +56,13 @@ public class ExpManager_SliderTest : MonoBehaviour
     {
         ThresholdTimer += Time.deltaTime;
         TotalTestTime += Time.deltaTime;
+        Debug.Log("RT 컨디션 : " + RT.ConditionList[RT.ConditionCount]);
 
         if (ThresholdTimer >= 0.1f)
         {
             if (Input.GetKeyDown(KeyCode.Alpha3))
             {
-                if (SliderCount < 15)
+                if (SliderCount < 14)
                 {
                     SliderCount++;
                     PIC.TurnOffPeripheralImage();
@@ -117,8 +118,13 @@ public class ExpManager_SliderTest : MonoBehaviour
 
     public void BlockEnd_SliderTest()
     {
-        if (RT.ConditionCount == 4)
+        if (RT.ConditionCount == 3)
+        {
+            Notice_MaxCondition.SetActive(false);
+            Notice_MinCondition.SetActive(false);
+            PIC.ST_TurnOffPeripheralImageParent();
             ExpEnd();
+        }
         else
         {
             NM.Term_BreakTime = true;
@@ -136,6 +142,10 @@ public class ExpManager_SliderTest : MonoBehaviour
         AdjustmentCount = 0;
         Bool_MinMaxNoticeTimer = false;
         MinMaxNoticeTimer = 0;
+        SliderCount = 0;
+        Notice_MaxCondition.SetActive(false);
+        Notice_MinCondition.SetActive(false);
+        PIC.ST_TurnOffPeripheralImageParent();
     }
 
     void ExpEnd()
@@ -146,8 +156,8 @@ public class ExpManager_SliderTest : MonoBehaviour
 
     void ResetAtStart()
     {
-        Term_SliderTest = true;
-        Term_ST_ProceedTask = true;
+        Term_SliderTest = false;
+        Term_ST_ProceedTask = false;
         PlayerAnswer = 0;
         ST_MinimumFRS = 0;
         RT_AverageFRS = 0;

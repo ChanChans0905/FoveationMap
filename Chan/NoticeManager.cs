@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +12,7 @@ public class NoticeManager : MonoBehaviour
     [SerializeField] ExpManager_RandomTest RT;
     [SerializeField] CSV_Save_Processed CSV_P;
     [SerializeField] CSV_Save_Raw CSV_R;
+    [SerializeField] PeripheralImageController PIC;
     public GameObject Notice_SelectSample, Notice_Welcome, Notice_GameStart;
     public GameObject Notice_ST_BreakStart, Notice_ST_Start;
     public GameObject Notice_RT_BreakStart, Notice_RT_Start;
@@ -117,6 +119,7 @@ public class NoticeManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Alpha2) && ThresholdTimer > 1.5f)
             {
                 Notice_ST_Start.SetActive(false);
+                PIC.ST_TurnOnPI_AtStart();
                 ST.Term_ST_ProceedTask = true;
                 Term_Notice_NewCondition = false;
                 ThresholdTimer = 0;
@@ -143,7 +146,7 @@ public class NoticeManager : MonoBehaviour
 
         if (ST.Term_SliderTest)
         {
-            if (BreakTimer < 60)
+            if (BreakTimer < 3)
                 Notice_ST_BreakStart.SetActive(true);
             else
             {
@@ -157,10 +160,9 @@ public class NoticeManager : MonoBehaviour
                 Term_Notice_NewCondition = true;
             }
         }
-
-        if (RT.Term_RandomTest)
+        else if (RT.Term_RandomTest)
         {
-            if (BreakTimer < 60)
+            if (BreakTimer < 3)
                 Notice_RT_BreakStart.SetActive(true);
             else
             {

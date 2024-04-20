@@ -36,6 +36,7 @@ public class ExpManager_RandomTest : MonoBehaviour
     void Start()
     {
         ResetAtStart();
+        ConditionCount = 0;
 
         // 1. Cinema 2. UI 3. Web 4. Game
         ConditionList = new int[] { 0, 1, 2, 3 };
@@ -99,7 +100,7 @@ public class ExpManager_RandomTest : MonoBehaviour
                 Notice_OpenFirstImage.SetActive(false);
         }
 
-        if (TaskTimer > 2 && TaskTimer < 8)
+        if (TaskTimer > 2 && TaskTimer < 2.1f)
         {
             if (ImageOrder == 1)
                 ShowTexture_Origin(CurrentScenario);
@@ -107,13 +108,13 @@ public class ExpManager_RandomTest : MonoBehaviour
                 ShowTexture_Foveation(CurrentScenario);
         }
 
-        if (TaskTimer > 9 && TaskTimer < 12)
-            if (TaskTimer < 11)
+        if (TaskTimer > 2.2f && TaskTimer < 2.3f)
+            if (TaskTimer < 2.25f)
                 Notice_OpenSecondImage.SetActive(true);
             else
                 Notice_OpenSecondImage.SetActive(false);
 
-        if (TaskTimer > 12 && TaskTimer < 17)
+        if (TaskTimer > 2.4f && TaskTimer < 2.5f)
         {
             if (ImageOrder == 1)
                 ShowTexture_Foveation(CurrentScenario);
@@ -121,10 +122,10 @@ public class ExpManager_RandomTest : MonoBehaviour
                 ShowTexture_Origin(CurrentScenario);
         }
 
-        if ((TaskTimer > 8 && TaskTimer < 9) || (TaskTimer > 17 && TaskTimer < 18))
+        if ((TaskTimer > 2.1f && TaskTimer < 2.2f) || (TaskTimer > 2.5f && TaskTimer < 2.6f))
             TurnOffTexture();
 
-        if (TaskTimer > 17)
+        if (TaskTimer > 2.6f)
         {
             PIC.TurnOffPeripheralImage();
             Term_RT_ProceedTask = false;
@@ -203,7 +204,7 @@ public class ExpManager_RandomTest : MonoBehaviour
         Term_InputAnswer = false;
         Term_ChangeImageOrder = true;
 
-        if (TaskCount != 14)
+        if (TaskCount != 15)
             Term_RT_ProceedTask = true;
         else
             BlockEnd_RandomTest();
@@ -238,7 +239,6 @@ public class ExpManager_RandomTest : MonoBehaviour
         IsCorrect = 0;
         Term_InputAnswer = false;
         TaskCount = 0;
-        ConditionCount = 0;
         Term_RT_ProceedTask = false;
         AnsweringTimer = 0;
         Term_AddAnsweringTimer = false;

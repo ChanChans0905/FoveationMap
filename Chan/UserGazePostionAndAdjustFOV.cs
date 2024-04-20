@@ -43,7 +43,7 @@ public class UserGazePostionAndAdjustFOV : MonoBehaviour
     public void AdjustFoveation()
     {
         FoveaRegionSize = (Mathf.Tan(Mathf.Deg2Rad * CameraFOV / 2f) * DistanceFromTheScreen);
-        UnityEngine.Debug.Log("Fovea Region Radius is : " + CameraFOV);
+        //UnityEngine.Debug.Log("Fovea Region Radius is : " + CameraFOV);
         TT.text = CameraFOV.ToString();
     }
 }
