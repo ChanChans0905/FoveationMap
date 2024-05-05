@@ -53,33 +53,44 @@ Shader "Custom/AlphaBlending_Fovea" {
                 // Sample the texture color
                 fixed4 TextureColor = tex2D(_MainTex, i.uv);
 
-                float PixelCoor_X = i.worldPos.x;
-                float PixelCoor_Y = i.worldPos.y;
-                float FRS_Left = UserGazePoint.x - FoveaRegionSize;
-                float FRS_Right = UserGazePoint.x + FoveaRegionSize;
-                float FRS_Up = UserGazePoint.y + FoveaRegionSize;
-                float FRS_Down = UserGazePoint.y - FoveaRegionSize;
+                float UV_X = i.worldPos.x;
+                float UV_Y = i.worldPos.y;
+                float FR_L = UserGazePoint.x - FoveaRegionSize;
+                float FR_R = UserGazePoint.x + FoveaRegionSize;
+                float FR_U = UserGazePoint.y + FoveaRegionSize;
+                float FR_D = UserGazePoint.y - FoveaRegionSize;
+
+                float BR_1 = FoveaRegionSize * 0.01;
+                float BR_2 = FoveaRegionSize * 0.02;
+                float BR_3 = FoveaRegionSize * 0.03;
+                float FRL = FoveaRegionSize * 0.02;
                 
                 // Square Region
-                bool FoveaRegion = PixelCoor_X < FRS_Right && PixelCoor_X > FRS_Left && PixelCoor_Y < FRS_Up && PixelCoor_Y > FRS_Down;
-                bool BlendRegion_1 = PixelCoor_X < FRS_Right + FoveaRegionSize*2/100 && PixelCoor_X > FRS_Left - FoveaRegionSize*2/100 && PixelCoor_Y < FRS_Up + FoveaRegionSize*2/100 && PixelCoor_Y > FRS_Down - FoveaRegionSize*2/100; 
-                bool BlendRegion_2 = PixelCoor_X < FRS_Right + FoveaRegionSize*4/100 && PixelCoor_X > FRS_Left - FoveaRegionSize*4/100 && PixelCoor_Y < FRS_Up + FoveaRegionSize*4/100 && PixelCoor_Y > FRS_Down - FoveaRegionSize*4/100; 
-                bool BlendRegion_3 = PixelCoor_X < FRS_Right + FoveaRegionSize*6/100 && PixelCoor_X > FRS_Left - FoveaRegionSize*6/100 && PixelCoor_Y < FRS_Up + FoveaRegionSize*6/100 && PixelCoor_Y > FRS_Down - FoveaRegionSize*6/100; 
+                bool FoveaRegion = UV_X < FR_R && UV_X > FR_L && UV_Y < FR_U && UV_Y > FR_D;
 
-                if(!FoveaRegion)
+                // Define blend regions
+                bool BlendRegion_1 = UV_X < FR_R - BR_1 && UV_X > FR_L + BR_1 && UV_Y < FR_U - BR_1 && UV_Y > FR_D + BR_1; 
+                bool BlendRegion_2 = UV_X < FR_R - BR_2 && UV_X > FR_L + BR_2 && UV_Y < FR_U - BR_2 && UV_Y > FR_D + BR_2; 
+                bool BlendRegion_3 = UV_X < FR_R - BR_3 && UV_X > FR_L + BR_3 && UV_Y < FR_U - BR_3 && UV_Y > FR_D + BR_3; 
+                bool FoveaRegionLine = UV_X < FR_R + FRL && UV_X > FR_L - FRL && UV_Y < FR_U + FRL && UV_Y > FR_D - FRL; 
+
+                if(FoveaRegion)
                 {
-                    if(BlendRegion_3)
-                        TextureColor.a = 0.25;             
-
-                    if(BlendRegion_2)
-                        TextureColor.a = 0.5;
+                    TextureColor.a = 0.25;
 
                     if(BlendRegion_1)
+                        TextureColor.a = 0.5;             
+
+                    if(BlendRegion_2)
                         TextureColor.a = 0.75;
 
-                    if(!BlendRegion_3) // Peripheral Region
-                        TextureColor.a = 0.0;
+                    if(BlendRegion_3)
+                        TextureColor.a = 1;
                 }
+            else if(FoveaRegionLine) // fovea region boundary
+                   TextureColor = (0,0,0,1);
+                else if(!FoveaRegion) // Peripheral Region
+                    TextureColor.a = 0.0;
                 
                 return TextureColor; // Return the modified color
             }

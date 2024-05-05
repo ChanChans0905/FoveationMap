@@ -11,33 +11,45 @@ public class CSV_Save_Raw : MonoBehaviour
     [SerializeField] ExpManager_SliderTest ST;
     [SerializeField] ExpManager_RandomTest RT;
     [SerializeField] UserGazePostionAndAdjustFOV User;
-    [SerializeField] CSV_Save_Processed CSV_P;
-    string[] csvHeaders = new string[] { "Data Name" };
-    float[] DA_ST = new float[10];
-    float[] DA_RT = new float[10];
+    public GameObject GazePoint, UserHMD;
+    string[] csvHeaders = new string[] { "TaskTime", "GazePos_X", "GazePos_Y", "GazePos_Z", "HMDpos_X", "HMDpos_Y", "HMDpos_Z", "HMDrot_X", "HMDrot_Y", "HMDrot_Z", "OutOfScreenTime" };
+    float[] PlayerData = new float[11];
     string csvFileName;
     string FilePath;
 
     void FixedUpdate()
     {
-        if (RT.Term_RT_ProceedTask)
+        // GazePoint, HeadPosition, HeadRotation
+
+        if (RT.Term_RT_ProceedTask && !RT.IsRestTime)
         {
-            DA_RT[0] = RT.ConditionList[RT.ConditionCount];
-            DA_RT[1] = RT.TaskCount;
-            DA_RT[2] = RT.ImageOrder;
-            DA_RT[3] = RT.PlayerAnswer;
-            DA_RT[4] = RT.IsCorrect;
-            DA_RT[5] = User.CameraFOV;
-            AppendToCsv(DA_RT);
+            PlayerData[0] = RT.TaskTimer;
+            PlayerData[1] = GazePoint.transform.position.x;
+            PlayerData[2] = GazePoint.transform.position.y;
+            PlayerData[3] = GazePoint.transform.position.z;
+            PlayerData[4] = UserHMD.transform.position.x;
+            PlayerData[5] = UserHMD.transform.position.y;
+            PlayerData[6] = UserHMD.transform.position.z;
+            PlayerData[7] = UserHMD.transform.rotation.x;
+            PlayerData[8] = UserHMD.transform.rotation.y;
+            PlayerData[9] = UserHMD.transform.rotation.z;
+            PlayerData[10] = User.OutOfScreenTimer;
+            AppendToCsv(PlayerData);
         }
-        else if (ST.Term_ST_ProceedTask)
+        if (ST.Term_ST_ProceedTask)
         {
-            DA_ST[0] = ST.PlayerAnswer;
-            DA_ST[1] = ST.TotalTestTime;
-            DA_ST[2] = ST.ST_MinimumFRS;
-            DA_ST[3] = User.CameraFOV;
-            DA_ST[4] = ST.AdjustmentCount;
-            AppendToCsv(DA_ST);
+            PlayerData[0] = ST.TotalTestTime;
+            PlayerData[1] = GazePoint.transform.position.x;
+            PlayerData[2] = GazePoint.transform.position.y;
+            PlayerData[3] = GazePoint.transform.position.z;
+            PlayerData[4] = UserHMD.transform.position.x;
+            PlayerData[5] = UserHMD.transform.position.y;
+            PlayerData[6] = UserHMD.transform.position.z;
+            PlayerData[7] = UserHMD.transform.rotation.x;
+            PlayerData[8] = UserHMD.transform.rotation.y;
+            PlayerData[9] = UserHMD.transform.rotation.z;
+            PlayerData[10] = User.OutOfScreenTimer;
+            AppendToCsv(PlayerData);
         }
     }
 
@@ -69,7 +81,7 @@ public class CSV_Save_Raw : MonoBehaviour
             csvFileName = "FM_Sample_" + NM.SampleNumber + "_Con_" + RT.ConditionList[RT.ConditionCount] + "_RT_TaskCount" + RT.TaskCount + ".csv";
 
         if (ST.Term_SliderTest)
-            csvFileName = "FM_Sample_" + NM.SampleNumber + "_Con_" + RT.ConditionList[RT.ConditionCount] + "_ST" + ".csv";
+            csvFileName = "FM_Sample_" + NM.SampleNumber + "_Con_" + RT.ConditionList[RT.ConditionCount] + "_ST_TaskCount" + ST.RepetitionCount + ".csv";
 
         FilePath = Application.dataPath + "/" + csvDirectoryName + "/" + csvFileName;
 
