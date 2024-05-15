@@ -20,37 +20,31 @@ public class CSV_Save_Raw : MonoBehaviour
     void FixedUpdate()
     {
         // GazePoint, HeadPosition, HeadRotation
-
         if (RT.Term_RT_ProceedTask && !RT.IsRestTime)
         {
-            PlayerData[0] = RT.TaskTimer;
-            PlayerData[1] = GazePoint.transform.position.x;
-            PlayerData[2] = GazePoint.transform.position.y;
-            PlayerData[3] = GazePoint.transform.position.z;
-            PlayerData[4] = UserHMD.transform.position.x;
-            PlayerData[5] = UserHMD.transform.position.y;
-            PlayerData[6] = UserHMD.transform.position.z;
-            PlayerData[7] = UserHMD.transform.rotation.x;
-            PlayerData[8] = UserHMD.transform.rotation.y;
-            PlayerData[9] = UserHMD.transform.rotation.z;
-            PlayerData[10] = User.OutOfScreenTimer;
-            AppendToCsv(PlayerData);
+            UpdatePlayerData(RT.TaskTimer);
         }
+
         if (ST.Term_ST_ProceedTask)
         {
-            PlayerData[0] = ST.TotalTestTime;
-            PlayerData[1] = GazePoint.transform.position.x;
-            PlayerData[2] = GazePoint.transform.position.y;
-            PlayerData[3] = GazePoint.transform.position.z;
-            PlayerData[4] = UserHMD.transform.position.x;
-            PlayerData[5] = UserHMD.transform.position.y;
-            PlayerData[6] = UserHMD.transform.position.z;
-            PlayerData[7] = UserHMD.transform.rotation.x;
-            PlayerData[8] = UserHMD.transform.rotation.y;
-            PlayerData[9] = UserHMD.transform.rotation.z;
-            PlayerData[10] = User.OutOfScreenTimer;
-            AppendToCsv(PlayerData);
+            UpdatePlayerData(ST.TotalTestTime);
         }
+    }
+
+    void UpdatePlayerData(float taskTime)
+    {
+        PlayerData[0] = taskTime;
+        PlayerData[1] = GazePoint.transform.position.x;
+        PlayerData[2] = GazePoint.transform.position.y;
+        PlayerData[3] = GazePoint.transform.position.z;
+        PlayerData[4] = UserHMD.transform.position.x;
+        PlayerData[5] = UserHMD.transform.position.y;
+        PlayerData[6] = UserHMD.transform.position.z;
+        PlayerData[7] = UserHMD.transform.rotation.x;
+        PlayerData[8] = UserHMD.transform.rotation.y;
+        PlayerData[9] = UserHMD.transform.rotation.z;
+        PlayerData[10] = User.OutOfScreenTimer;
+        AppendToCsv(PlayerData);
     }
 
     public void AppendToCsv(float[] data)
@@ -78,10 +72,10 @@ public class CSV_Save_Raw : MonoBehaviour
         Directory.CreateDirectory(dir);
 
         if (RT.Term_RandomTest)
-            csvFileName = "FM_Sample_" + NM.SampleNumber + "_Con_" + RT.ConditionList[RT.ConditionCount] + "_RT_TaskCount" + RT.TaskCount + ".csv";
+            csvFileName = "FM_Sample_" + NM.SampleNumber + "_Con_" + RT.ConditionList[RT.ConditionCount] + "_RT_FOV_" + User.CameraFOV + "_Res_" + RT.ConditionOrder[RT.TaskCount] + "_Repetition_" + RT.RepetitionCount + ".csv";
 
         if (ST.Term_SliderTest)
-            csvFileName = "FM_Sample_" + NM.SampleNumber + "_Con_" + RT.ConditionList[RT.ConditionCount] + "_ST_TaskCount" + ST.RepetitionCount + ".csv";
+            csvFileName = "FM_Sample_" + NM.SampleNumber + "_Con_" + RT.ConditionList[RT.ConditionCount] + "_RT_FOV_" + User.CameraFOV + "_Repetition_" + ST.RepetitionCount + ".csv";
 
         FilePath = Application.dataPath + "/" + csvDirectoryName + "/" + csvFileName;
 

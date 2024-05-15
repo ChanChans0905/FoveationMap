@@ -27,14 +27,20 @@ public class ExpManager_SliderTest : MonoBehaviour
     public float TotalTestTime;
     public int SliderCount;
     public float RT_AverageFRS;
-    public TextMeshProUGUI T_FOV;
     float MinMaxNoticeTimer;
     bool Bool_MinMaxNoticeTimer;
     public int RepetitionCount;
     bool Term_ST_MovetoNextTask;
+    public int[] FovOrder;
+    public int[] FovOrder_HomeUI;
+    float VideoLoopTimer;
 
     void Start()
     {
+        FovOrder = new int[] { 20, 20, 30, 30, 40, 40, 50, 50 };
+        RT.ShuffleArray(FovOrder);
+        FovOrder_HomeUI = new int[] { 30, 30, 40, 40, 50, 50, 60, 60 };
+        RT.ShuffleArray(FovOrder_HomeUI);
         ResetAtStart();
     }
 
@@ -53,9 +59,11 @@ public class ExpManager_SliderTest : MonoBehaviour
         {
             ThresholdTimer += Time.deltaTime;
             TotalTestTime += Time.deltaTime;
+            VideoLoopTimer += Time.deltaTime;
         }
     }
 
+    /* #region RT 결과 적용할 시 */
     // public void SetSliderTestCondition()
     // {
     //     // foreach (float value in RT.LastFiveAnswers)
@@ -65,43 +73,16 @@ public class ExpManager_SliderTest : MonoBehaviour
 
     //     User.CameraFOV = 20;
     // }
+    /* #endregion */
 
     void AdjustFoveation()
     {
-        Debug.Log("RT 컨디션 : " + RT.ConditionList[RT.ConditionCount]);
-
         if (ThresholdTimer >= 0.3f)
         {
             if (Input.GetKeyDown(KeyCode.Alpha3))
-            {
-                if (SliderCount < 29)
-                {
-                    PIC.ST_TurnOnOffPI(false);
-                    SliderCount++;
-                    PIC.ST_TurnOnOffPI(true);
-                    ThresholdTimer = 0;
-                }
-                else
-                {
-                    Bool_MinMaxNoticeTimer = true;
-                    Notice_MaxCondition.SetActive(true);
-                }
-            }
+                HandleSliderChange(1, 9, Notice_MaxCondition);
             else if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                if (SliderCount > 0)
-                {
-                    PIC.ST_TurnOnOffPI(false);
-                    SliderCount--;
-                    PIC.ST_TurnOnOffPI(true);
-                    ThresholdTimer = 0;
-                }
-                else
-                {
-                    Bool_MinMaxNoticeTimer = true;
-                    Notice_MinCondition.SetActive(true);
-                }
-            }
+                HandleSliderChange(-1, 0, Notice_MinCondition);
             else if (Input.GetKeyDown(KeyCode.Alpha2)) // save
             {
                 PIC.ST_TurnOnOffPI(false);
@@ -118,18 +99,45 @@ public class ExpManager_SliderTest : MonoBehaviour
                     Term_ST_MovetoNextTask = true;
             }
 
-            T_FOV.text = User.CameraFOV.ToString();
-
             if (Bool_MinMaxNoticeTimer)
                 MinMaxNoticeTimer += Time.deltaTime;
 
-            if (MinMaxNoticeTimer > 2)
+            if (MinMaxNoticeTimer > 1.5f)
             {
                 Notice_MaxCondition.SetActive(false);
                 Notice_MinCondition.SetActive(false);
                 MinMaxNoticeTimer = 0;
                 Bool_MinMaxNoticeTimer = false;
             }
+        }
+
+        if (VideoLoopTimer > 8)
+        {
+            PIC.ST_TurnOnOffPIP(false);
+            PIC.ST_TurnOnOffPI(false);
+            PIC.ST_TurnOnOffPIP(true);
+            PIC.ST_TurnOnOffPI(true);
+            VideoLoopTimer = 0;
+        }
+    }
+
+    void HandleSliderChange(int increment, int limit, GameObject notice)
+    {
+        if ((increment == 1 && SliderCount < limit) || (increment == -1 && SliderCount > limit))
+        {
+            RT.Block.SetActive(true);
+            PIC.ST_TurnOnOffPIP(false);
+            PIC.ST_TurnOnOffPI(false);
+            SliderCount += increment;
+            PIC.ST_TurnOnOffPIP(true);
+            PIC.ST_TurnOnOffPI(true);
+            VideoLoopTimer = 0;
+            ThresholdTimer = 0;
+        }
+        else
+        {
+            Bool_MinMaxNoticeTimer = true;
+            notice.SetActive(true);
         }
     }
 
@@ -151,10 +159,10 @@ public class ExpManager_SliderTest : MonoBehaviour
 
     public void SetStartCondition()
     {
-        Debug.Log("ST_SetStartCondition");
+        RT.Block.SetActive(false);
         User.ST_AdjustCameraFOV();
-        PIC.ST_TurnOnOffPI(true);
         PIC.ST_TurnOnOffPIP(true);
+        PIC.ST_TurnOnOffPI(true);
     }
 
     public void BlockEnd_SliderTest()
@@ -168,6 +176,8 @@ public class ExpManager_SliderTest : MonoBehaviour
         }
         else
         {
+            RT.ShuffleArray(FovOrder);
+            RT.ShuffleArray(FovOrder_HomeUI);
             NM.Term_BreakTime = true;
             RepetitionCount = 0;
         }
@@ -184,6 +194,7 @@ public class ExpManager_SliderTest : MonoBehaviour
         Notice_MinCondition.SetActive(false);
         PIC.ST_TurnOnOffPIP(false);
         User.OutOfScreenTimer = 0;
+        VideoLoopTimer = 0;
     }
 
     void ExpEnd()

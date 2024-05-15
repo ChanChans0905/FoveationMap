@@ -87,8 +87,8 @@ Shader "Custom/AlphaBlending_Fovea" {
                     if(BlendRegion_3)
                         TextureColor.a = 1;
                 }
-            else if(FoveaRegionLine) // fovea region boundary
-                   TextureColor = (0,0,0,1);
+            // else if(FoveaRegionLine) // fovea region boundary
+            //       TextureColor = (0,0,0,1);
                 else if(!FoveaRegion) // Peripheral Region
                     TextureColor.a = 0.0;
                 

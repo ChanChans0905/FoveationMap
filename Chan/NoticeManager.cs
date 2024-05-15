@@ -163,6 +163,8 @@ public class NoticeManager : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.Alpha2) && ThresholdTimer > 1.5f)
             {
+                PIC.RT_TurnOnOffPIP(true);
+                RT.Block.SetActive(true);
                 Notice_RT_Start.SetActive(false);
                 RT.Term_RT_ProceedTask = true;
                 Term_Notice_NewCondition = false;

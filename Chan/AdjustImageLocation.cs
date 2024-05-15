@@ -15,10 +15,10 @@ public class AdjustImageLocation : MonoBehaviour
         UserPositionY = User.transform.position.y;
     }
 
-    void FixedUpdate()
+    void Update()
     {
-        // UserPositionY = User.transform.position.y;
-        // UserPositionX = User.transform.position.x;
+        UserPositionY = User.transform.position.y;
+        UserPositionX = User.transform.position.x;
         transform.position = new Vector3(UserPositionX, UserPositionY, User.transform.position.z + 1.5f);
     }
 }

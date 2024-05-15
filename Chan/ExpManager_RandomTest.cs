@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEngine;
+using UnityEngine.Video;
 
 public class ExpManager_RandomTest : MonoBehaviour
 {
@@ -15,8 +16,11 @@ public class ExpManager_RandomTest : MonoBehaviour
     [SerializeField] CSV_Save_Processed_RT CSV_P_RT;
     [SerializeField] CSV_Save_Raw CSV_R;
     [SerializeField] PeripheralImageController PIC;
+    public GameObject Block;
     public int[] ConditionList = new int[4];
     public int[] ConditionOrder = new int[15];
+    public int[] FovOrder = new int[4];
+    public int[] FovOrder_HomeUI = new int[4];
     public int ImageOrder;
     public float TaskTimer;
     public int PlayerAnswer;
@@ -31,27 +35,33 @@ public class ExpManager_RandomTest : MonoBehaviour
     bool Term_AddAnsweringTimer;
     bool Term_ChangeImageOrder;
     public bool Term_RandomTest;
-    public TextMeshProUGUI Num_C, Num_T, Num_R;
     public bool BlockEnd_RandomTest;
     public bool IsRestTime;
+    public int FovCount;
 
     void Start()
     {
         ResetAtStart();
 
-        // 1. Cinema 2. UI 3. Web 4. Game
+        // 0. Cinema 1. UI 2. Web 3. Game
         ConditionList = new int[] { 0, 1, 2, 3 };
-        ShuffleArray(ConditionList);
+        //ShuffleArray(ConditionList);
 
-        // fovea region size 4 x peripheral region resolution 4
-        ConditionOrder = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+        // peripheral image resolution
+        ConditionOrder = new int[] { 0, 1, 2, 3 };
+        ShuffleArray(ConditionOrder);
+
+        // FOV size
+        FovOrder = new int[] { 20, 30, 40, 50 };
+        ShuffleArray(FovOrder);
+        FovOrder_HomeUI = new int[] { 30, 40, 50, 60 };
+        ShuffleArray(FovOrder_HomeUI);
 
         ChangeCondition();
     }
 
     void Update()
     {
-        // 실험 조건 : 같은 컨디션에 대해 4번 반복, 2번 할 때마다 1분 휴식
         if (Term_RandomTest)
         {
             if (Term_RT_ProceedTask)
@@ -60,9 +70,6 @@ public class ExpManager_RandomTest : MonoBehaviour
             if (Term_InputAnswer)
                 GetUserAnswer();
         }
-
-        Num_C.text = ConditionList[ConditionCount].ToString();
-        Num_T.text = TaskCount.ToString();
     }
 
     void FixedUpdate()
@@ -86,20 +93,19 @@ public class ExpManager_RandomTest : MonoBehaviour
                 CurrentScenario = Scenario.Web;
             else if (ConditionList[ConditionCount] == 3)
                 CurrentScenario = Scenario.Game;
-
-            ShuffleArray(ConditionOrder);
         }
     }
 
     public void ProceedTask()
     {
-        // 이미지 제공 시간 : 6초
+        // 이미지 제공 시간 : 9초
         // 쉬는 시간 : 2초
 
-        if (TaskTimer < 0.5f)
+        if (TaskTimer < 1.5f)
         {
             if (Term_ChangeImageOrder)
             {
+                Block.SetActive(true);
                 CSV_R.New_CSV_File();
                 ImageOrder = UnityEngine.Random.Range(0, 2);
                 PIC.RT_TurnOnPI();
@@ -107,43 +113,44 @@ public class ExpManager_RandomTest : MonoBehaviour
                 Term_ChangeImageOrder = false;
             }
 
-            if (TaskTimer < 0.2f)
+            if (TaskTimer < 1f)
                 Notice_OpenFirstImage.SetActive(true);
             else
+            {
+                MoveObject(ImageOrder == 1);
                 Notice_OpenFirstImage.SetActive(false);
+                Block.SetActive(false);
+            }
         }
 
-        if (TaskTimer > 0.5 && TaskTimer < 1f)
+        if (TaskTimer > 1.5f && TaskTimer < 10.5f)
+            TurnOnOffTexture(ImageOrder == 1, true);
+
+        if (TaskTimer > 10.5f && TaskTimer < 12f)
         {
-            if (ImageOrder == 1)
-                ShowTexture_Origin(CurrentScenario);
-            else
-                ShowTexture_Foveation(CurrentScenario);
-        }
-
-        if (TaskTimer > 1f && TaskTimer < 1.1f)
-            TurnOffTexture();
-
-        if (TaskTimer > 1.1f && TaskTimer < 1.3f)
-            if (TaskTimer < 1.2f)
+            TurnOnOffTexture(ImageOrder == 1, false);
+            Block.SetActive(true);
+            if (TaskTimer < 11.7f)
                 Notice_OpenSecondImage.SetActive(true);
             else
+            {
+                MoveObject(ImageOrder != 1);
                 Notice_OpenSecondImage.SetActive(false);
-
-        if (TaskTimer > 1.3f && TaskTimer < 1.8f)
-        {
-            if (ImageOrder == 1)
-                ShowTexture_Foveation(CurrentScenario);
-            else
-                ShowTexture_Origin(CurrentScenario);
+                Block.SetActive(false);
+            }
         }
 
-        if (TaskTimer > 1.8f && TaskTimer < 1.9f)
-            TurnOffTexture();
+        if (TaskTimer > 12f && TaskTimer < 21f)
+            TurnOnOffTexture(ImageOrder != 1, true);
 
-        if (TaskTimer > 2.2f)
+        if (TaskTimer > 21f && TaskTimer < 22f)
         {
-            PIC.RT_TurnOffPI();
+            TurnOnOffTexture(ImageOrder != 1, false);
+            Block.SetActive(true);
+        }
+
+        if (TaskTimer > 22f)
+        {
             Term_RT_ProceedTask = false;
             Term_InputAnswer = true;
             Term_AddAnsweringTimer = true;
@@ -151,40 +158,89 @@ public class ExpManager_RandomTest : MonoBehaviour
         }
     }
 
-    void ShowTexture_Origin(Scenario CurrentScenario)
+    void TurnOnOffTexture(bool isOrigin, bool turnOnOff)
     {
-        if (CurrentScenario == Scenario.Cinema)
-            Cinema_Origin.SetActive(true);
-        else if (CurrentScenario == Scenario.UI)
-            UI_Origin.SetActive(true);
-        else if (CurrentScenario == Scenario.Web)
-            Web_Origin.SetActive(true);
-        else if (CurrentScenario == Scenario.Game)
-            Game_Origin.SetActive(true);
+        GameObject origin = null, foveated = null;
+
+        switch (CurrentScenario)
+        {
+            case Scenario.Cinema:
+                origin = Cinema_Origin;
+                foveated = Cinema_Foveated;
+                break;
+            case Scenario.UI:
+                origin = UI_Origin;
+                foveated = UI_Foveated;
+                break;
+            case Scenario.Web:
+                origin = Web_Origin;
+                foveated = Web_Foveated;
+                break;
+            case Scenario.Game:
+                origin = Game_Origin;
+                foveated = Game_Foveated;
+                break;
+        }
+
+        if (isOrigin)
+        {
+            WairFor1Second();
+            origin.SetActive(turnOnOff);
+        }
+        else
+        {
+            if (turnOnOff)
+                PIC.PlayVideo();
+            else
+                PIC.RT_TurnOffPI();
+        }
+
+        if (BlockEnd_RandomTest)
+        {
+            origin.SetActive(false);
+            foveated.SetActive(false);
+        }
     }
 
-    void ShowTexture_Foveation(Scenario CurrentScenario)
+    IEnumerator WairFor1Second()
     {
-        if (CurrentScenario == Scenario.Cinema)
-            Cinema_Foveated.SetActive(true);
-        else if (CurrentScenario == Scenario.UI)
-            UI_Foveated.SetActive(true);
-        else if (CurrentScenario == Scenario.Web)
-            Web_Foveated.SetActive(true);
-        else if (CurrentScenario == Scenario.Game)
-            Game_Foveated.SetActive(true);
+        yield return new WaitForSeconds(1f);
     }
 
-    void TurnOffTexture()
+    void MoveObject(bool isFirst)
     {
-        Cinema_Origin.SetActive(false);
-        Cinema_Foveated.SetActive(false);
-        UI_Origin.SetActive(false);
-        UI_Foveated.SetActive(false);
-        Web_Origin.SetActive(false);
-        Web_Foveated.SetActive(false);
-        Game_Origin.SetActive(false);
-        Game_Foveated.SetActive(false);
+        GameObject firstObj = null, secondObj = null;
+
+        switch (CurrentScenario)
+        {
+            case Scenario.Cinema:
+                firstObj = Cinema_Origin;
+                secondObj = Cinema_Foveated;
+                break;
+            case Scenario.UI:
+                firstObj = UI_Origin;
+                secondObj = UI_Foveated;
+                break;
+            case Scenario.Web:
+                firstObj = Web_Origin;
+                secondObj = Web_Foveated;
+                break;
+            case Scenario.Game:
+                firstObj = Game_Origin;
+                secondObj = Game_Foveated;
+                break;
+        }
+
+        if (isFirst)
+        {
+            firstObj.transform.localPosition = new Vector3(0, 0, 0f);
+            secondObj.transform.localPosition = new Vector3(0, 0, 0.1f);
+        }
+        else
+        {
+            firstObj.transform.localPosition = new Vector3(0, 0, 0.1f);
+            secondObj.transform.localPosition = new Vector3(0, 0, 0f);
+        }
     }
 
     void GetUserAnswer()
@@ -211,37 +267,40 @@ public class ExpManager_RandomTest : MonoBehaviour
             IsCorrect = 0;
 
         CSV_P_RT.Save_CSV_Processed();
-        TaskCount += 5;
+        TaskCount++;
         ResetAfterEachTask();
 
-        Debug.Log("TaskCount : " + TaskCount);
-
-        if (TaskCount < 15)
+        if (TaskCount != 4)
             Term_RT_ProceedTask = true;
         else
         {
-            RepetitionCount += 2;
+            RepetitionCount++;
             TaskCount = 0;
-
-            Debug.Log("RepetitionCount is : " + RepetitionCount);
 
             ShuffleArray(ConditionOrder);
 
-            if (RepetitionCount == 1 || RepetitionCount == 3)
+            if (RepetitionCount != 3)
                 Term_RT_ProceedTask = true;
-            else if (RepetitionCount == 2 || RepetitionCount == 4)
+            else
             {
                 NM.Term_BreakTime = true;
-                if (RepetitionCount == 4)
+                RepetitionCount = 0;
+                FovCount++;
+
+                if (FovCount == 4)
                 {
-                    ResetValue();
+                    FovCount = 0;
+
+                    ShuffleArray(FovOrder);
+                    ShuffleArray(FovOrder_HomeUI);
                     BlockEnd_RandomTest = true;
+                    TurnOnOffTexture(false, false);
                 }
             }
         }
     }
 
-    void ShuffleArray(int[] array)
+    public void ShuffleArray(int[] array)
     {
         System.Random rng = new System.Random();
         int n = array.Length;
@@ -264,16 +323,6 @@ public class ExpManager_RandomTest : MonoBehaviour
         User.OutOfScreenTimer = 0;
     }
 
-    void ResetValue()
-    {
-        Term_InputAnswer = false;
-        TaskCount = 0;
-        AnsweringTimer = 0;
-        Term_AddAnsweringTimer = false;
-        Term_ChangeImageOrder = true;
-        Term_RT_ProceedTask = false;
-        RepetitionCount = 0;
-    }
 
     void ResetAtStart()
     {
